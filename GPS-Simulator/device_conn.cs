@@ -36,7 +36,11 @@ namespace GPS_Simulator
 
         public static string get_ddi_image_url(string version)
         {
-            return ddi_repo_url + version + ".zip";
+            // only take the main version
+            // like 13.3.1 --> 13.3
+            var shortVersion = string.Join(".", version.Split('.').Take(2));
+
+            return ddi_repo_url + shortVersion + ".zip";
         }
 
 
