@@ -152,7 +152,11 @@ namespace GPS_Simulator
                 this.detailed_devinfo.Text += "1. Download provisioning package for your device....\n";
                 string prov_pkg_url = device_utils.get_ddi_image_url(device.Version);
 
-                string local_package_file = @"C:\temp\" + device.Version + ".zip";
+                // only take the main version
+                // like 13.3.1 --> 13.3
+                var shortVersion = string.Join(".", device.Version.Split('.').Take(2));
+
+                string local_package_file = @"C:\temp\" + shortVersion + ".zip";
                 try
                 {
                     WebClient webClient = new WebClient();
@@ -173,7 +177,11 @@ namespace GPS_Simulator
                 string local_folder = @"c:\temp\";
 
                 // clear up the directory if it has anything there
-                System.IO.Directory.Delete(@"local_folder", true);
+                if (System.IO.Directory.Exists(local_folder + shortVersion))
+                {
+                    System.IO.Directory.Delete(local_folder + shortVersion, true);
+                }
+                
                 System.IO.Compression.ZipFile.ExtractToDirectory(local_package_file, local_folder);
 
                 string dev_image_path = local_folder + device.Version + @"\DeveloperDiskImage.dmg";
@@ -213,6 +221,8 @@ namespace GPS_Simulator
                 else
                 {
                     this.detailed_devinfo.Text += "Failed.\n";
+                    this.detailed_devinfo.Text += "Please ensure the device screen is NOT locked!\n";
+                    this.start_prov_btn.Enabled = true;
                 }
             }
         }

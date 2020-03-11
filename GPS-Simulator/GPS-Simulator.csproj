@@ -56,7 +56,7 @@
       <HintPath>..\packages\iMobileDevice-net.1.2.186\lib\net45\iMobileDevice-net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Maps.MapControl.WPF">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Bing Maps WPF Control\V1\Libraries\Microsoft.Maps.MapControl.WPF.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Bing Maps WPF Control\V1\Libraries\Microsoft.Maps.MapControl.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
