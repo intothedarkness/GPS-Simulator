@@ -20,7 +20,7 @@ This app using [imobiledevice-net](https://github.com/libimobiledevice-win32/imo
 - Windows 10
 - Visual Studio 2019
 - .NET framework 4.7
-- Download and install the Bing Maps Windows Presentation Foundation Control (https://www.microsoft.com/en-us/download/details.aspx?id=27165)
+- Download and install the [Bing Maps Windows Presentation Foundation Control] (https://www.microsoft.com/en-us/download/details.aspx?id=27165)
 - Download and install the Windows Presentation Foundation Control SDK. (WPF)
 
 ### Build the app
@@ -44,8 +44,8 @@ Browse to the location of the Bing Maps WPF Control installation. Typically, the
 
 - Start spoofing
 
-  1. Connect the iOS device to your computer. (ensure your device is privisoned correctly)
-  2. Install Traditional win32 version iTunes Itunes (Note the version from Windows Store)
+  1. Connect the iOS device to your computer. (Ensure your device is privisoned correctly)
+  2. Install Traditional win32 version iTunes. (NOT the version from Windows Store)
   3. Double click on the map to your desired location.
 
 - Auto walking
