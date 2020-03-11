@@ -150,13 +150,9 @@ namespace GPS_Simulator
 
                 // 1.download the DDI package.
                 this.detailed_devinfo.Text += "1. Download provisioning package for your device....\n";
-                string prov_pkg_url = device_utils.get_ddi_image_url(device.Version);
+                string prov_pkg_url = device_utils.get_ddi_image_url(device);
 
-                // only take the main version
-                // like 13.3.1 --> 13.3
-                var shortVersion = string.Join(".", device.Version.Split('.').Take(2));
-
-                string local_package_file = @"C:\temp\" + shortVersion + ".zip";
+                string local_package_file = @"C:\temp\" + device.FullVersion + ".zip";
                 try
                 {
                     WebClient webClient = new WebClient();
@@ -177,14 +173,14 @@ namespace GPS_Simulator
                 string local_folder = @"c:\temp\";
 
                 // clear up the directory if it has anything there
-                if (System.IO.Directory.Exists(local_folder + shortVersion))
+                if (System.IO.Directory.Exists(local_folder + device.FullVersion))
                 {
-                    System.IO.Directory.Delete(local_folder + shortVersion, true);
+                    System.IO.Directory.Delete(local_folder + device.FullVersion, true);
                 }
                 
                 System.IO.Compression.ZipFile.ExtractToDirectory(local_package_file, local_folder);
 
-                string dev_image_path = local_folder + device.Version + @"\DeveloperDiskImage.dmg";
+                string dev_image_path = local_folder + device.FullVersion + @"\DeveloperDiskImage.dmg";
 
                 bool all_file_present = (System.IO.File.Exists(dev_image_path) &&
                     System.IO.File.Exists(dev_image_path + ".signature"));
@@ -209,6 +205,7 @@ namespace GPS_Simulator
                 System.Diagnostics.Process p = new System.Diagnostics.Process();
                 p.StartInfo.FileName = mounter;
                 p.StartInfo.Arguments = dev_image_path;
+                p.StartInfo.CreateNoWindow = true;
                 p.Start();
                 p.WaitForExit();
 

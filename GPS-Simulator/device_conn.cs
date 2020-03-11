@@ -34,15 +34,10 @@ namespace GPS_Simulator
     {
         public const string ddi_repo_url = @"https://github.com/intothedarkness/iOSDDIRepo/raw/master/";
 
-        public static string get_ddi_image_url(string version)
-        {
-            // only take the main version
-            // like 13.3.1 --> 13.3
-            var shortVersion = string.Join(".", version.Split('.').Take(2));
-
-            return ddi_repo_url + shortVersion + ".zip";
+        public static string get_ddi_image_url(DeviceModel deviceInfo)
+        { 
+            return ddi_repo_url + deviceInfo.FullVersion + ".zip";
         }
-
 
         public static bool is_device_on_dev_mode(string udid)
         {
@@ -136,6 +131,15 @@ namespace GPS_Simulator
 
                             LibiMobileDevice.Instance.Plist.plist_get_string_val(node, out var version);
 
+                            ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null,
+                                "BuildVersion", out node);
+                            if (ret_get_devname != 0)
+                            {
+                                continue;
+                            }
+
+                            LibiMobileDevice.Instance.Plist.plist_get_string_val(node, out var bldVersion);
+
                             iDeviceHandle.Dispose();
                             lockdownClientHandle.Dispose();
                             var device = new DeviceModel
@@ -143,6 +147,9 @@ namespace GPS_Simulator
                                 UDID = udid,
                                 Name = deviceName,
                                 Version = version,
+                                BuildVersion = bldVersion,
+                                ShortVersion = string.Join(".", version.Split('.').Take(2)),
+                                FullVersion = string.Join(".", version.Split('.').Take(2)) + "(" + bldVersion + ")",
                                 isDevMode = device_utils.is_device_on_dev_mode(udid)
                             };
 
@@ -341,9 +348,12 @@ namespace GPS_Simulator
     public class DeviceModel
     {
         public string UDID { get; set; }
-        public string Version { get; set; }
+        public string Version { get; set; } // 13.3.1
         public string Name { get; set; }
+        public string BuildVersion { get; set; }  // AXFGGG
         public bool isDevMode { get; set; }
+        public string FullVersion { get; set; } // 13.3(AXFGGG)
+        public string ShortVersion { get; set; } // 13.3
     }
 
 }
