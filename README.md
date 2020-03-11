@@ -20,7 +20,7 @@ This app using [imobiledevice-net](https://github.com/libimobiledevice-win32/imo
 - Windows 10
 - Visual Studio 2019
 - .NET framework 4.7
-- Download and install the [Bing Maps Windows Presentation Foundation Control] (https://www.microsoft.com/en-us/download/details.aspx?id=27165)
+- Download and install the [Bing Maps Windows Presentation Foundation Control](https://www.microsoft.com/en-us/download/details.aspx?id=27165)
 - Download and install the Windows Presentation Foundation Control SDK. (WPF)
 
 ### Build the app
