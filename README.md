@@ -3,8 +3,10 @@ GPS-Simulator is Windows app which allows you to spoofing a location on iOS devi
 
 This app using [imobiledevice-net](https://github.com/libimobiledevice-win32/imobiledevice-net) library and bingfor spoofing a location on device.
 
-## Features
+## Preview
+<img src="https://raw.githubusercontent.com/intothedarkness/GPS-Simulator/master/main.png">
 
+## Features
 - [x] Spoofing iOS device location without jailbrake or app install.
 - [x] Easy to set device location from the map, just by double clicking the map
 - [x] Supported GPX track auto walking with 3 different speed.
