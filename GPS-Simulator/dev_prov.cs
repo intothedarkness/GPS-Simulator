@@ -159,9 +159,10 @@ namespace GPS_Simulator
                     webClient.Headers.Add("cookie", "");
                     webClient.DownloadFile(new Uri(prov_pkg_url), local_package_file);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    this.detailed_devinfo.Text += "   incomplete! with" + ex.ToString() + "\n";
+                    this.detailed_devinfo.Text += "we can't find" + device.FullVersion + ".zip from our repository," +
+                        " please go to apple.com download the image and manually provision your device. \n";
                     return;
                 }
 
