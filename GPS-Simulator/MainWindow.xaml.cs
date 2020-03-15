@@ -132,23 +132,9 @@ namespace GPS_Simulator
             }
 
         }
-        /// <summary>
-        /// Draw GPX tracks on the map.
-        /// </summary>
-        public void draw_gpx_route()
-        {
-            if (g_gpx_file_name == null
-                || g_gpx_file_name.Length == 0)
-            {
-                return;
-            }
 
-            // read way points (latitude longitude) from  GPX file.
-
-            //
-            // FIXME: it might not be compatible with some of GPX files, 
-            // need to add better GPX handler for this in the future.
-            //
+        private static void read_gpx_coords(string gpx_file_name, ref LocationCollection lc)
+        { 
             XDocument doc = null;
             try
             {
@@ -158,7 +144,7 @@ namespace GPS_Simulator
                     doc = XDocument.Load(oReader);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 System.Windows.Forms.MessageBox.Show("invalid GPX format!");
                 return;
@@ -167,7 +153,6 @@ namespace GPS_Simulator
             XElement root = doc.Root;
             XNamespace ns = root.GetDefaultNamespace();
 
-            LocationCollection lc = new LocationCollection();
             var results = doc.Descendants(ns + "trkpt").Select(x => new
             {
                 lat = x.Attribute("lat").Value,
@@ -179,6 +164,32 @@ namespace GPS_Simulator
                 lc.Add(new Location(Convert.ToDouble(wpt.lat),
                     Convert.ToDouble(wpt.lon)));
             }
+
+            results = doc.Descendants(ns + "wpt").Select(x => new
+            {
+                lat = x.Attribute("lat").Value,
+                lon = x.Attribute("lon").Value,
+            }).ToList();
+
+            foreach (var wpt in results)
+            {
+                lc.Add(new Location(Convert.ToDouble(wpt.lat),
+                    Convert.ToDouble(wpt.lon)));
+            }
+        }
+        /// <summary>
+        /// Draw GPX tracks on the map.
+        /// </summary>
+        public void draw_gpx_route()
+        {
+            if (g_gpx_file_name == null
+                || g_gpx_file_name.Length == 0)
+            {
+                return;
+            }
+
+            LocationCollection lc = new LocationCollection();
+            read_gpx_coords(g_gpx_file_name, ref lc);
 
             // draw the tack on map
             MapPolyline polyline = new MapPolyline();
@@ -328,6 +339,7 @@ namespace GPS_Simulator
             teleport_pin.Location = tele;
 
             // Adds the pushpin to the map.
+            myMap.Center = tele;
             myMap.Children.Add(teleport_pin);
 
             location_service.GetInstance(this).UpdateLocation(tele);
