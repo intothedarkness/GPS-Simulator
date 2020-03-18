@@ -5,22 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using iMobileDevice;
-using iMobileDevice.iDevice;
-using iMobileDevice.Lockdown;
-using iMobileDevice.Plist;
-using iMobileDevice.Service;
-using iMobileDevice.MobileImageMounter;
-
 using System.Net;
-using System.IO.Compression;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace GPS_Simulator
 {
@@ -167,7 +154,7 @@ namespace GPS_Simulator
                 }
 
                 this.detailed_devinfo.Text += "Done. \n";
-                
+
                 // 2. unzip the package.. 
                 // FIXME: better to use async downloader.
                 this.detailed_devinfo.Text += "2. Unzipping the package... \n";
@@ -178,7 +165,7 @@ namespace GPS_Simulator
                 {
                     System.IO.Directory.Delete(local_folder + device.FullVersion, true);
                 }
-                
+
                 System.IO.Compression.ZipFile.ExtractToDirectory(local_package_file, local_folder);
 
                 string dev_image_path = local_folder + device.FullVersion + @"\DeveloperDiskImage.dmg";

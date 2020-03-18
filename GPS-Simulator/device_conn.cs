@@ -5,27 +5,14 @@
 using iMobileDevice;
 using iMobileDevice.iDevice;
 using iMobileDevice.Lockdown;
-using iMobileDevice.Plist;
-using iMobileDevice.Service;
 using iMobileDevice.MobileImageMounter;
-
+using iMobileDevice.Service;
+using Microsoft.Maps.MapControl.WPF;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
-using Microsoft.Maps;
-using Microsoft.Maps.MapControl.WPF;
-using Microsoft.Maps.MapControl.WPF.Design;
-
-using System.Net;
-using System.Windows.Navigation;
 
 namespace GPS_Simulator
 {
@@ -35,7 +22,7 @@ namespace GPS_Simulator
         public const string ddi_repo_url = @"https://github.com/intothedarkness/iOSDDIRepo/raw/master/";
 
         public static string get_ddi_image_url(DeviceModel deviceInfo)
-        { 
+        {
             return ddi_repo_url + deviceInfo.FullVersion + ".zip";
         }
 
@@ -101,28 +88,28 @@ namespace GPS_Simulator
                             iDevice.idevice_new(out iDeviceHandle, udid).ThrowOnError();
                             LockdownClientHandle lockdownClientHandle;
 
-                            var ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle, 
+                            var ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle,
                                 out lockdownClientHandle, "Quamotion");
                             if (ret_handshake != 0)
                             {
                                 continue;
                             }
 
-                            var ret_get_devname = lockdown.lockdownd_get_device_name(lockdownClientHandle, 
+                            var ret_get_devname = lockdown.lockdownd_get_device_name(lockdownClientHandle,
                                 out var deviceName);
                             if (ret_get_devname != 0)
                             {
                                 continue;
                             }
 
-                            ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle, 
+                            ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle,
                                 out lockdownClientHandle, "waua");
                             if (ret_handshake != 0)
                             {
                                 continue;
                             }
 
-                            var ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null, 
+                            var ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null,
                                 "ProductVersion", out var node);
                             if (ret_get_devname != 0)
                             {
@@ -164,7 +151,7 @@ namespace GPS_Simulator
                 }
             });
         }
-        
+
         public enum dev_op
         {
             add_device = 1,
@@ -174,7 +161,7 @@ namespace GPS_Simulator
 
         public void device_add_remove(DeviceModel device, dev_op op_type)
         {
-            switch(op_type)
+            switch (op_type)
             {
                 case dev_op.add_device:
 
@@ -193,7 +180,7 @@ namespace GPS_Simulator
                         }
                         else
                         {
-                            wnd_instance.connected_dev.Text += "Device " 
+                            wnd_instance.connected_dev.Text += "Device "
                             + device.Name + "(" + device.Version +
                             ") is connected!";
                         }
@@ -205,7 +192,7 @@ namespace GPS_Simulator
                 case dev_op.remove_device:
                     wnd_instance.Dispatcher.Invoke((Action)(() =>
                     {
-                        wnd_instance.connected_dev.Text += "Device " 
+                        wnd_instance.connected_dev.Text += "Device "
                         + device.Name + "(" + device.Version +
                         ") is disconnected!";
                     }));
@@ -231,7 +218,7 @@ namespace GPS_Simulator
             }));
 
         }
- 
+
         public void UpdateLocation(Location location)
         {
             // no device is connected.
@@ -247,7 +234,7 @@ namespace GPS_Simulator
 
             var size = BitConverter.GetBytes(0u);
             Array.Reverse(size);
-            
+
             for (int i = 0; i < Devices.Count(); i++)
             {
                 DeviceModel itm = Devices[i];
@@ -274,7 +261,7 @@ namespace GPS_Simulator
                 }
 
                 var se = service.service_client_new(device, service2, out var client2);
-                
+
                 se = service.service_send(client2, size, 4u, ref num);
 
                 num = 0u;
@@ -282,14 +269,14 @@ namespace GPS_Simulator
                 size = BitConverter.GetBytes((uint)Latitude.Length);
                 Array.Reverse(size);
                 se = service.service_send(client2, size, 4u, ref num);
-                se = service.service_send(client2, bytesLocation, 
+                se = service.service_send(client2, bytesLocation,
                     (uint)bytesLocation.Length, ref num);
 
                 bytesLocation = Encoding.ASCII.GetBytes(Longitude);
                 size = BitConverter.GetBytes((uint)Longitude.Length);
                 Array.Reverse(size);
                 se = service.service_send(client2, size, 4u, ref num);
-                se = service.service_send(client2, bytesLocation, 
+                se = service.service_send(client2, bytesLocation,
                     (uint)bytesLocation.Length, ref num);
             }
         }
@@ -307,7 +294,7 @@ namespace GPS_Simulator
             {
                 var num = 0u;
                 iDevice.idevice_new(out var device, itm.UDID);
-                var lockdowndError = lockdown.lockdownd_client_new_with_handshake(device, 
+                var lockdowndError = lockdown.lockdownd_client_new_with_handshake(device,
                     out LockdownClientHandle client, "com.alpha.jailout");
                 if (lockdowndError != 0)
                 {

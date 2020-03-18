@@ -307,12 +307,12 @@ namespace GPS_Simulator
         /// <param name="e"></param>
         private void tele_Button_Click(object sender, RoutedEventArgs e)
         {
-
             if (cur_walking_state == e_walking_state.walking_active)
             {
                 System.Windows.Forms.MessageBox.Show("Quit from walking mode first.");
                 return;
             }
+
             Location tele = new Location();
 
             try
@@ -352,6 +352,14 @@ namespace GPS_Simulator
         /// <param name="e"></param>
         private void Map_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+
+            // Disables double-click teleport when it is in walking mode.
+            if (cur_walking_state == e_walking_state.walking_active)
+            {
+                System.Windows.Forms.MessageBox.Show("Quit from walking mode first.");
+                return;
+            }
+
             // Disables the default mouse double-click action.
             e.Handled = true;
 
@@ -415,6 +423,11 @@ namespace GPS_Simulator
 
                 default: break;
             }
+        }
+
+        private void Button_favorite_Button_ClickClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

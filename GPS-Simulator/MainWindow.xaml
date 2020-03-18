@@ -20,12 +20,12 @@
         <Button x:Name ="option" Content="Load GPX" HorizontalAlignment="Left" Height="26" Margin="36,363,0,0" VerticalAlignment="Top" Width="110" Click="option_Button_Click"/>
         <Button x:Name ="stop_button" Content="Stop" HorizontalAlignment="Left" Height="26" Margin="36,425,0,0" VerticalAlignment="Top" Width="110" Click="stop_Button_Click"/>
 
-        <GroupBox Header="Teleport" HorizontalAlignment="Left" Height="152" Margin="22,23,0,0" VerticalAlignment="Top" Width="144"/>
+        <GroupBox Header="Teleport" HorizontalAlignment="Left" Height="152" Margin="22,23,0,0" VerticalAlignment="Top" Width="144" />
         <TextBox x:Name ="lat" HorizontalAlignment="Left" Height="28" Margin="75,48,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="71"/>
         <TextBox x:Name ="lon" HorizontalAlignment="Left" Height="28" Margin="75,81,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="71"/>
         <Label  Content="Lat" HorizontalAlignment="Left" Height="28" Margin="36,48,0,0" VerticalAlignment="Top" Width="60"/>
         <Label  Content="Lon" HorizontalAlignment="Left" Height="28" Margin="36,81,0,0" VerticalAlignment="Top" Width="60"/>
-        <Button Content="Teleport" HorizontalAlignment="Left" Height="26" Margin="36,124,0,0" VerticalAlignment="Top" Width="110" Click="tele_Button_Click"/>
+        <Button Content="Teleport" HorizontalAlignment="Left" Height="26" Margin="36,149,0,0" VerticalAlignment="Top" Width="110" Click="tele_Button_Click"/>
         <RadioButton x:Name ="walking_speed" Content="Walk - 8.8km/h" HorizontalAlignment="Left" Height="26" Margin="44,215,0,0" VerticalAlignment="Top" Click="walking_speed_click" Width="110"/>
         <RadioButton x:Name ="driving_speed" Content="Drive - 105km/h" HorizontalAlignment="Left" Height="26" Margin="44,273,0,0" VerticalAlignment="Top" Click="driving_speed_click" Width="110"/>
         <RadioButton x:Name ="running_speed" Content="Run - 26.4km/h" HorizontalAlignment="Left" Height="26" Margin="44,244,0,0" VerticalAlignment="Top" Click="running_speed_click" Width="110"/>

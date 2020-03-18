@@ -2,30 +2,10 @@
 //  Created by Richard Zhang (Richard.Rupo.Zhang@gmail.com) on 3/2020
 //  Copyright © 2020 Richard Zhang. All rights reserved.
 //
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Forms;
-using System.Xml;
-using System.IO;
-using System.Xml.Linq;
-using System.Timers;
-
 // Bing MAP WPF reference
-using Microsoft.Maps;
 using Microsoft.Maps.MapControl.WPF;
-using Microsoft.Maps.MapControl.WPF.Design;
+using System;
+using System.Linq;
 
 namespace GPS_Simulator
 {
@@ -108,13 +88,13 @@ namespace GPS_Simulator
         const double radius = 6378100;
         public static double Bearing(Location pt1, Location pt2)
         {
-            double x = Math.Cos(DegreesToRadians(pt1.Latitude)) 
-                * Math.Sin(DegreesToRadians(pt2.Latitude)) 
-                - Math.Sin(DegreesToRadians(pt1.Latitude)) 
-                * Math.Cos(DegreesToRadians(pt2.Latitude)) 
+            double x = Math.Cos(DegreesToRadians(pt1.Latitude))
+                * Math.Sin(DegreesToRadians(pt2.Latitude))
+                - Math.Sin(DegreesToRadians(pt1.Latitude))
+                * Math.Cos(DegreesToRadians(pt2.Latitude))
                 * Math.Cos(DegreesToRadians(pt2.Longitude - pt1.Longitude));
 
-            double y = Math.Sin(DegreesToRadians(pt2.Longitude - pt1.Longitude)) 
+            double y = Math.Sin(DegreesToRadians(pt2.Longitude - pt1.Longitude))
                 * Math.Cos(DegreesToRadians(pt2.Latitude));
 
             // Math.Atan2 can return negative value, 0 <= output value < 2*PI expected 
@@ -132,10 +112,10 @@ namespace GPS_Simulator
             return radians * radToDegFactor;
         }
 
-        public static Location FindPointAtDistanceFrom(Location startPoint, 
+        public static Location FindPointAtDistanceFrom(Location startPoint,
             double bearing, double distance)
         {
-  
+
             var distRatio = distance / radius;
             var distRatioSine = Math.Sin(distRatio);
             var distRatioCosine = Math.Cos(distRatio);
@@ -146,7 +126,7 @@ namespace GPS_Simulator
             var startLatCos = Math.Cos(startLatRad);
             var startLatSin = Math.Sin(startLatRad);
 
-            var endLatRads = Math.Asin((startLatSin * distRatioCosine) 
+            var endLatRads = Math.Asin((startLatSin * distRatioCosine)
                 + (startLatCos * distRatioSine * Math.Cos(bearing)));
 
             var endLonRads = startLonRad
@@ -168,7 +148,7 @@ namespace GPS_Simulator
         public Location get_next_step_location()
         {
             Location next_location = new Location();
-            double dis_to_next_seg = distance_on_loc(m_cur_location, 
+            double dis_to_next_seg = distance_on_loc(m_cur_location,
                 m_polyline.Locations[m_cur_seg_index + 1]);
 
             // check if the potential next step is out of 
@@ -177,11 +157,11 @@ namespace GPS_Simulator
             if (dis_walk_500ms < dis_to_next_seg)
             {
                 // current segment.
-                double bearing = Bearing(m_polyline.Locations[m_cur_seg_index], 
+                double bearing = Bearing(m_polyline.Locations[m_cur_seg_index],
                     m_polyline.Locations[m_cur_seg_index + 1]);
 
-                next_location = FindPointAtDistanceFrom(m_cur_location, 
-                    bearing, 
+                next_location = FindPointAtDistanceFrom(m_cur_location,
+                    bearing,
                     dis_walk_500ms);
             }
             else
@@ -197,12 +177,12 @@ namespace GPS_Simulator
                 }
 
                 double mode_dis = dis_walk_500ms - dis_to_next_seg;
-                double bearing = Bearing(m_polyline.Locations[m_cur_seg_index], 
+                double bearing = Bearing(m_polyline.Locations[m_cur_seg_index],
                     m_polyline.Locations[m_cur_seg_index + 1]);
 
                 next_location = FindPointAtDistanceFrom(
                     m_polyline.Locations[m_cur_seg_index],
-                    bearing, 
+                    bearing,
                     mode_dis);
             }
 
