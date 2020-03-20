@@ -352,7 +352,6 @@ namespace GPS_Simulator
         /// <param name="e"></param>
         private void Map_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
             // Disables double-click teleport when it is in walking mode.
             if (cur_walking_state == e_walking_state.walking_active)
             {
