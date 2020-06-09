@@ -3,47 +3,48 @@
 //  Copyright © 2020 Richard Zhang. All rights reserved.
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Forms;
-using System.Xml;
 using System.IO;
 using System.Xml.Linq;
 
 // Bing Map WPF control
-using Microsoft.Maps;
 using Microsoft.Maps.MapControl.WPF;
-using Microsoft.Maps.MapControl.WPF.Design;
 using System.Windows.Threading;
 
 // libimobiledevice-net references
 using iMobileDevice;
-using iMobileDevice.iDevice;
-using iMobileDevice.Lockdown;
-using iMobileDevice.Service;
 
+using System.Net;
+using System.Xml;
+
+using System.Threading;
+using System.Globalization;
+
+using System.Collections.Generic;
+using System.Windows.Data;
 
 namespace GPS_Simulator
 {
+    public class list_item
+    {
+        public Location loc { get; set; }
+        public string Name { get; set; }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-
         // fast walking speed is at 8.8km/h == 2.47 m/s
         const double c_fast_walking_speed                       = 2.47f;
+
+        // Current query result
+        public List<list_item> g_query_result = new List<list_item>();
 
         public enum e_walking_state
         {
@@ -307,7 +308,7 @@ namespace GPS_Simulator
         /// <param name="e"></param>
         private void tele_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (cur_walking_state == e_walking_state.walking_active)
+            if (cur_walking_state != e_walking_state.walking_stopped)
             {
                 System.Windows.Forms.MessageBox.Show("Quit from walking mode first.");
                 return;
@@ -391,6 +392,10 @@ namespace GPS_Simulator
             // Adds the pushpin to the map.
             myMap.Children.Add(teleport_pin);
 
+            // update the coords
+            lat.Text = pinLocation.Latitude.ToString();
+            lon.Text = pinLocation.Longitude.ToString();
+
             location_service.GetInstance(this).UpdateLocation(pinLocation);
         }
 
@@ -424,9 +429,105 @@ namespace GPS_Simulator
             }
         }
 
-        private void Button_favorite_Button_ClickClick(object sender, RoutedEventArgs e)
+        private XmlDocument GetXmlResponse(string requestUrl)
         {
+            System.Diagnostics.Trace.WriteLine("Request URL (XML): " + requestUrl);
+            HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;
+            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            {
+                if (response.StatusCode != HttpStatusCode.OK)
+                    throw new Exception(String.Format("Server error (HTTP {0}: {1}).",
+                    response.StatusCode,
+                    response.StatusDescription));
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(response.GetResponseStream());
+                return xmlDoc;
+            }
+        }
 
+        private double ConvertToDouble(string s)
+        {
+            char systemSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
+            double result = 0;
+            try
+            {
+                if (s != null)
+                    if (!s.Contains(","))
+                        result = double.Parse(s, CultureInfo.InvariantCulture);
+                    else
+                        result = Convert.ToDouble(s.Replace(".", systemSeparator.ToString()).Replace(",", systemSeparator.ToString()));
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    result = Convert.ToDouble(s);
+                }
+                catch
+                {
+                    try
+                    {
+                        result = Convert.ToDouble(s.Replace(",", ";").Replace(".", ",").Replace(";", "."));
+                    }
+                    catch
+                    {
+                        throw new Exception("Wrong string-to-double format");
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void search_Button_Click(object sender, RoutedEventArgs e)
+        {
+            search_result_list.Items.Clear();
+            g_query_result.Clear();
+
+            if (search_box.Text.Length <= 0)
+            {
+                return;
+            }
+            
+            string BingMapKey = @"MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU";
+            string requestUrl = @"http://dev.virtualearth.net/REST/v1/Locations/" + search_box.Text + "?o=xml&key=" + BingMapKey;
+
+            // Make the request and get the response
+            XmlDocument geocodeResponse = GetXmlResponse(requestUrl);
+
+            // Create namespace manager
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(geocodeResponse.NameTable);
+            nsmgr.AddNamespace("rest", "http://schemas.microsoft.com/search/local/ws/rest/v1");
+
+            // Get all geocode locations in the response 
+            XmlNodeList locationElements = geocodeResponse.SelectNodes("//rest:Location", nsmgr);
+
+            foreach (XmlNode locnode in locationElements)
+            {
+                Location loc = new Location();
+                loc.Latitude = ConvertToDouble(locnode.SelectSingleNode(".//rest:Latitude", nsmgr).InnerText);
+                loc.Longitude = ConvertToDouble(locnode.SelectSingleNode(".//rest:Longitude", nsmgr).InnerText);
+
+                list_item it = new list_item();
+                it.loc = loc;
+                it.Name = locnode.SelectSingleNode(".//rest:Name", nsmgr).InnerText;
+
+                g_query_result.Add(it);
+                search_result_list.Items.Add(it.Name);
+            }
+        }
+
+        private void search_result_list_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (g_query_result.Count <= 0 || search_result_list.SelectedIndex < 0)
+            {
+                return;
+            }
+            else
+            {
+                list_item it = g_query_result[search_result_list.SelectedIndex];
+                lat.Text = it.loc.Latitude.ToString();
+                lon.Text = it.loc.Longitude.ToString();
+            }
         }
     }
 }

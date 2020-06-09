@@ -242,7 +242,7 @@ namespace GPS_Simulator
                 iDevice.idevice_new(out var device, itm.UDID);
 
                 var ret_handshake = lockdown.lockdownd_client_new_with_handshake(device, out var client,
-                    "idevicelocation");
+                    "devicelocation");
                 if (ret_handshake != 0)
                 {
                     continue;
@@ -278,6 +278,12 @@ namespace GPS_Simulator
                 se = service.service_send(client2, size, 4u, ref num);
                 se = service.service_send(client2, bytesLocation,
                     (uint)bytesLocation.Length, ref num);
+
+                device.Dispose();
+                client.Dispose();
+                client2.Dispose();
+
+                service2 = null;
             }
         }
 
