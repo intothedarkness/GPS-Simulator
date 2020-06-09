@@ -166,7 +166,7 @@ namespace GPS_Simulator
                     System.IO.Directory.Delete(local_folder + device.FullVersion, true);
                 }
 
-                System.IO.Compression.ZipFile.ExtractToDirectory(local_package_file, local_folder + device.FullVersion);
+                System.IO.Compression.ZipFile.ExtractToDirectory(local_package_file, local_folder);
 
                 string dev_image_path = local_folder + device.FullVersion + @"\DeveloperDiskImage.dmg";
 
