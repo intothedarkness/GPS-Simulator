@@ -2,30 +2,22 @@
 //  Created by Richard Zhang (Richard.Rupo.Zhang@gmail.com) on 3/2020
 //  Copyright © 2020 Richard Zhang. All rights reserved.
 //
-using System;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Forms;
-using System.IO;
-using System.Xml.Linq;
-
-// Bing Map WPF control
-using Microsoft.Maps.MapControl.WPF;
-using System.Windows.Threading;
-
 // libimobiledevice-net references
 using iMobileDevice;
-
-using System.Net;
-using System.Xml;
-
-using System.Threading;
-using System.Globalization;
-
+// Bing Map WPF control
+using Microsoft.Maps.MapControl.WPF;
+using System;
 using System.Collections.Generic;
-using System.Windows.Data;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Threading;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace GPS_Simulator
 {
@@ -41,7 +33,7 @@ namespace GPS_Simulator
     public partial class MainWindow : Window
     {
         // fast walking speed is at 8.8km/h == 2.47 m/s
-        const double c_fast_walking_speed                       = 2.47f;
+        const double c_fast_walking_speed = 2.47f;
 
         // Current query result
         public List<list_item> g_query_result = new List<list_item>();
@@ -55,12 +47,12 @@ namespace GPS_Simulator
 
         public e_walking_state cur_walking_state = e_walking_state.walking_stopped;
 
-        public static string g_gpx_file_name                    = null;
-        public MapPolyline g_polyline                           = null;
-        private static DispatcherTimer walking_timer            = null;
-        private static walking_timer_callback timer_callback    = null;
-        location_service loc_service                            = null;
-        public Pushpin teleport_pin                             = null;
+        public static string g_gpx_file_name = null;
+        public MapPolyline g_polyline = null;
+        private static DispatcherTimer walking_timer = null;
+        private static walking_timer_callback timer_callback = null;
+        location_service loc_service = null;
+        public Pushpin teleport_pin = null;
 
         /// <summary>
         /// main window initialization
@@ -89,7 +81,7 @@ namespace GPS_Simulator
             loc_service = location_service.GetInstance(this);
             loc_service.ListeningDevice();
 
-            if (loc_service.Devices.Count <1)
+            if (loc_service.Devices.Count < 1)
             {
                 device_prov.IsEnabled = false;
             }
@@ -140,12 +132,12 @@ namespace GPS_Simulator
             XNamespace gpx = XNamespace.Get("http://www.topografix.com/GPX/1/1");
 
             var waypoints = from waypoint in gpx_file.Descendants(gpx + "wpt")
-            select new
-            {
-                Latitude = waypoint.Attribute("lat").Value,
-                Longitude = waypoint.Attribute("lon").Value,
-                Elevation = waypoint.Element(gpx + "ele") != null ? waypoint.Element(gpx + "ele").Value : null
-            };
+                            select new
+                            {
+                                Latitude = waypoint.Attribute("lat").Value,
+                                Longitude = waypoint.Attribute("lon").Value,
+                                Elevation = waypoint.Element(gpx + "ele") != null ? waypoint.Element(gpx + "ele").Value : null
+                            };
 
             foreach (var wpt in waypoints)
             {
@@ -155,19 +147,19 @@ namespace GPS_Simulator
             }
 
             var tracks = from track in gpx_file.Descendants(gpx + "trk")
-            select new
-            {
-                Name = track.Element(gpx + "name") != null ? track.Element(gpx + "name").Value : null,
-                Segs = (
-                from trackpoint in track.Descendants(gpx + "trkpt")
-                    select new
-                    {
-                        Latitude = trackpoint.Attribute("lat").Value,
-                        Longitude = trackpoint.Attribute("lon").Value,
-                        Elevation = trackpoint.Element(gpx + "ele") != null ? trackpoint.Element(gpx + "ele").Value : null
-                    }
-                )
-            };
+                         select new
+                         {
+                             Name = track.Element(gpx + "name") != null ? track.Element(gpx + "name").Value : null,
+                             Segs = (
+                             from trackpoint in track.Descendants(gpx + "trkpt")
+                             select new
+                             {
+                                 Latitude = trackpoint.Attribute("lat").Value,
+                                 Longitude = trackpoint.Attribute("lon").Value,
+                                 Elevation = trackpoint.Element(gpx + "ele") != null ? trackpoint.Element(gpx + "ele").Value : null
+                             }
+                             )
+                         };
 
             foreach (var trk in tracks)
             {
@@ -210,7 +202,7 @@ namespace GPS_Simulator
             g_polyline = polyline;
 
             myMap.Center = lc[0];
-            
+
             // set the walking to the beginning of new route
             if (timer_callback != null)
             {
@@ -246,7 +238,7 @@ namespace GPS_Simulator
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void walk_Button_Click(object sender, RoutedEventArgs e)
-        {   
+        {
             if (g_gpx_file_name == null)
             {
                 System.Windows.Forms.MessageBox.Show("Please load a GPX file and then walk.");
@@ -422,7 +414,7 @@ namespace GPS_Simulator
                     walking.Content = "Start"; // indicate use can start in stopped.
                     walking_timer.Stop();
                     option.IsEnabled = true; // user can load new route.
-                    
+
                     // reset to the beginning of the route.
                     timer_callback.reset();
                     cur_walking_state = e_walking_state.walking_stopped;
@@ -490,7 +482,7 @@ namespace GPS_Simulator
             {
                 return;
             }
-            
+
             string BingMapKey = @"MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU";
             string requestUrl = @"http://dev.virtualearth.net/REST/v1/Locations/" + search_box.Text + "?o=xml&key=" + BingMapKey;
 

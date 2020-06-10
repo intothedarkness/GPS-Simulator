@@ -188,7 +188,7 @@ namespace GPS_Simulator
                         }
                     }));
 
-                    
+
                     break;
 
                 case dev_op.remove_device:
