@@ -39,15 +39,15 @@
         <GroupBox Header="Speed" HorizontalAlignment="Left" Height="132" Margin="10,316,0,0" VerticalAlignment="Top" Width="225">
             <CheckBox x:Name="gps_drift" Content="GPS Drifting" HorizontalAlignment="Left" Height="19" Margin="28,88,0,0" VerticalAlignment="Top" Width="173"/>
         </GroupBox>
-        <GroupBox Header="Device Informtion" HorizontalAlignment="Left" Height="123" Margin="10,568,0,-0.333" VerticalAlignment="Top" Width="225">
+        <GroupBox Header="Device Informtion" HorizontalAlignment="Left" Height="113" Margin="10,568,0,0" VerticalAlignment="Top" Width="225">
             <TextBlock x:Name ="connected_dev" Height="59" Margin="0,4,2.333,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         </GroupBox>
-        <Button x:Name ="device_prov" Content="More" HorizontalAlignment="Left" Height="26" Margin="29,655,0,0" VerticalAlignment="Top" Width="182" Click="device_Button_Click"/>
+        <Button x:Name ="device_prov" Content="More" HorizontalAlignment="Left" Height="26" Margin="29,650,0,0" VerticalAlignment="Top" Width="182" Click="device_Button_Click"/>
 
-        <GroupBox Header="Search" HorizontalAlignment="Left" Height="189" Margin="15,15,0,0" VerticalAlignment="Top" Width="220" />
-        <Button Content="Search" HorizontalAlignment="Left" Height="25" Margin="159,29,0,0" VerticalAlignment="Top" Width="59" RenderTransformOrigin="1.206,0.45" Click="search_Button_Click"/>
-        <TextBox x:Name ="search_box" HorizontalAlignment="Left" Height="25" Margin="36,29,0,0" VerticalAlignment="Top" Width="118"/>
-        <ListBox x:Name ="search_result_list" Margin="36,59,1055.333,0" VerticalAlignment="Top" Visibility="{Binding HasItems,RelativeSource={RelativeSource Self}}" Height="140" SelectionChanged="search_result_list_SelectionChanged"  />
+        <GroupBox Header="Search" HorizontalAlignment="Left" Height="204" Margin="15,0,0,0" VerticalAlignment="Top" Width="220" />
+        <Button Content="Search" HorizontalAlignment="Left" Height="25" Margin="159,16,0,0" VerticalAlignment="Top" Width="59" RenderTransformOrigin="1.206,0.45" Click="search_Button_Click"/>
+        <TextBox x:Name ="search_box" HorizontalAlignment="Left" Height="25" Margin="36,16,0,0" VerticalAlignment="Top" Width="118"/>
+        <ListBox x:Name ="search_result_list" Margin="29,46,1048.333,0" VerticalAlignment="Top" Visibility="{Binding HasItems,RelativeSource={RelativeSource Self}}" Height="153" SelectionChanged="search_result_list_SelectionChanged"  />
 
     </Grid>
 
