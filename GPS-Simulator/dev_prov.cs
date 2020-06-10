@@ -19,9 +19,14 @@ namespace GPS_Simulator
             InitializeComponent();
 
             detailed_devinfo.ReadOnly = true;
-
-
+            
             // only take care of the first device.
+            if (Devices.Count > 1)
+            {
+                System.Windows.Forms.MessageBox.Show("More than one device is connected, provision tool only support one device at a time.");
+                return;
+            }
+
             device = Devices[0];
             this.devinfo.Text = device.Name + "(" + device.Version + ")";
 
@@ -193,7 +198,9 @@ namespace GPS_Simulator
                 System.Diagnostics.Process p = new System.Diagnostics.Process();
                 p.StartInfo.FileName = mounter;
                 p.StartInfo.Arguments = dev_image_path;
-                p.StartInfo.CreateNoWindow = true;
+
+                // Do not show the console window.
+                p.StartInfo.WindowStyle  = System.Diagnostics.ProcessWindowStyle.Hidden;
                 p.Start();
                 p.WaitForExit();
 

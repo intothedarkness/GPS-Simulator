@@ -36,7 +36,7 @@
             // 
             // start_prov_btn
             // 
-            this.start_prov_btn.Location = new System.Drawing.Point(12, 333);
+            this.start_prov_btn.Location = new System.Drawing.Point(12, 357);
             this.start_prov_btn.Name = "start_prov_btn";
             this.start_prov_btn.Size = new System.Drawing.Size(321, 41);
             this.start_prov_btn.TabIndex = 0;
@@ -65,15 +65,15 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.detailed_devinfo);
-            this.groupBox1.Location = new System.Drawing.Point(12, 63);
+            this.groupBox1.Location = new System.Drawing.Point(12, 80);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(321, 264);
+            this.groupBox1.Size = new System.Drawing.Size(321, 247);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             // 
             // dev_prov
             // 
-            this.ClientSize = new System.Drawing.Size(345, 394);
+            this.ClientSize = new System.Drawing.Size(362, 460);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.devinfo);
             this.Controls.Add(this.start_prov_btn);

@@ -5,7 +5,6 @@
 using iMobileDevice;
 using iMobileDevice.iDevice;
 using iMobileDevice.Lockdown;
-using iMobileDevice.MobileImageMounter;
 using iMobileDevice.Service;
 using Microsoft.Maps.MapControl.WPF;
 using System;
@@ -55,7 +54,6 @@ namespace GPS_Simulator
         public IiDeviceApi iDevice = LibiMobileDevice.Instance.iDevice;
         public ILockdownApi lockdown = LibiMobileDevice.Instance.Lockdown;
         public IServiceApi service = LibiMobileDevice.Instance.Service;
-        public IMobileImageMounterApi mounter = LibiMobileDevice.Instance.MobileImageMounter;
         private static location_service _instance;
 
         public Action<string> PrintMessageEvent = null;
