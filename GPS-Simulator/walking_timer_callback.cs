@@ -206,12 +206,29 @@ namespace GPS_Simulator
 
             m_cur_location = get_next_step_location();
 
-            // drift the location randomly 
-            m_pin.Location = m_cur_location;
+            if ((bool)m_wnd.gps_drift.IsChecked)
+            {
+                // drift the GPS (lon, lat)
+                Random rnd = new Random();
+                double lon_drift = rnd.NextDouble() * (0.00004 - 0.00001) + 0.00001;
+                double lat_drift = rnd.NextDouble() * (0.00004 - 0.00001) + 0.00001;
+                int direction = (rnd.Next(0, 1) > 0) ? 1 : -1;
+
+                m_pin.Location = new Location(
+                    m_cur_location.Latitude + lat_drift * direction,
+                    m_cur_location.Longitude + lon_drift * direction,
+                    // add elevation data if GPX has it.
+                    m_polyline.Locations[m_cur_seg_index].Latitude);
+            }
+            else
+            {
+                m_pin.Location = m_cur_location;
+            }
+
             m_map.Children.Add(m_pin);
 
             // update the location to device
-            location_service.GetInstance(m_wnd).UpdateLocation(m_cur_location);
+            location_service.GetInstance(m_wnd).UpdateLocation(m_pin.Location);
         }
 
         /// <summary>

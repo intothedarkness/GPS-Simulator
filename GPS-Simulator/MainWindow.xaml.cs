@@ -135,47 +135,50 @@ namespace GPS_Simulator
         }
 
         private static void read_gpx_coords(string gpx_file_name, ref LocationCollection lc)
-        { 
-            XDocument doc = null;
-            try
+        {
+            XDocument gpx_file = XDocument.Load(gpx_file_name);
+            XNamespace gpx = XNamespace.Get("http://www.topografix.com/GPX/1/1");
+
+            var waypoints = from waypoint in gpx_file.Descendants(gpx + "wpt")
+            select new
             {
-                using (StreamReader oReader = new StreamReader(g_gpx_file_name,
-                    Encoding.GetEncoding("ISO-8859-1")))
+                Latitude = waypoint.Attribute("lat").Value,
+                Longitude = waypoint.Attribute("lon").Value,
+                Elevation = waypoint.Element(gpx + "ele") != null ? waypoint.Element(gpx + "ele").Value : null
+            };
+
+            foreach (var wpt in waypoints)
+            {
+                lc.Add(new Location(Convert.ToDouble(wpt.Latitude),
+                    Convert.ToDouble(wpt.Longitude),
+                    Convert.ToDouble(wpt.Elevation)));
+            }
+
+            var tracks = from track in gpx_file.Descendants(gpx + "trk")
+            select new
+            {
+                Name = track.Element(gpx + "name") != null ? track.Element(gpx + "name").Value : null,
+                Segs = (
+                from trackpoint in track.Descendants(gpx + "trkpt")
+                    select new
+                    {
+                        Latitude = trackpoint.Attribute("lat").Value,
+                        Longitude = trackpoint.Attribute("lon").Value,
+                        Elevation = trackpoint.Element(gpx + "ele") != null ? trackpoint.Element(gpx + "ele").Value : null
+                    }
+                )
+            };
+
+            foreach (var trk in tracks)
+            {
+                // Populate track data.
+                foreach (var trkSeg in trk.Segs)
                 {
-                    doc = XDocument.Load(oReader);
+                    lc.Add(new Location(Convert.ToDouble(trkSeg.Latitude),
+                        Convert.ToDouble(trkSeg.Longitude),
+                        Convert.ToDouble(trkSeg.Elevation)));
                 }
-            }
-            catch (Exception)
-            {
-                System.Windows.Forms.MessageBox.Show("invalid GPX format!");
-                return;
-            }
 
-            XElement root = doc.Root;
-            XNamespace ns = root.GetDefaultNamespace();
-
-            var results = doc.Descendants(ns + "trkpt").Select(x => new
-            {
-                lat = x.Attribute("lat").Value,
-                lon = x.Attribute("lon").Value,
-            }).ToList();
-
-            foreach (var wpt in results)
-            {
-                lc.Add(new Location(Convert.ToDouble(wpt.lat),
-                    Convert.ToDouble(wpt.lon)));
-            }
-
-            results = doc.Descendants(ns + "wpt").Select(x => new
-            {
-                lat = x.Attribute("lat").Value,
-                lon = x.Attribute("lon").Value,
-            }).ToList();
-
-            foreach (var wpt in results)
-            {
-                lc.Add(new Location(Convert.ToDouble(wpt.lat),
-                    Convert.ToDouble(wpt.lon)));
             }
         }
         /// <summary>

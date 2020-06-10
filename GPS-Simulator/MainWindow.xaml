@@ -20,10 +20,10 @@
 
 
         </m:Map>
-        <GroupBox Header="Walking Route" HorizontalAlignment="Left" Height="115" Margin="10,433,0,0" VerticalAlignment="Top" Width="225"/>
-        <Button x:Name ="walking" Content="Start" HorizontalAlignment="Left" Height="26" Margin="36,482,0,0" VerticalAlignment="Top" Width="182" Click="walk_Button_Click"/>
-        <Button x:Name ="option" Content="Load GPX" HorizontalAlignment="Left" Height="26" Margin="36,451,0,0" VerticalAlignment="Top" Width="182" Click="option_Button_Click"/>
-        <Button x:Name ="stop_button" Content="Stop" HorizontalAlignment="Left" Height="26" Margin="36,513,0,0" VerticalAlignment="Top" Width="182" Click="stop_Button_Click"/>
+        <GroupBox Header="Walking Route" HorizontalAlignment="Left" Height="115" Margin="10,453,0,0" VerticalAlignment="Top" Width="225"/>
+        <Button x:Name ="walking" Content="Start" HorizontalAlignment="Left" Height="26" Margin="36,502,0,0" VerticalAlignment="Top" Width="182" Click="walk_Button_Click"/>
+        <Button x:Name ="option" Content="Load GPX" HorizontalAlignment="Left" Height="26" Margin="36,471,0,0" VerticalAlignment="Top" Width="182" Click="option_Button_Click"/>
+        <Button x:Name ="stop_button" Content="Stop" HorizontalAlignment="Left" Height="26" Margin="36,533,0,0" VerticalAlignment="Top" Width="182" Click="stop_Button_Click"/>
 
 
         <GroupBox Header="Teleport" HorizontalAlignment="Left" Height="109" Margin="10,204,0,0" VerticalAlignment="Top" Width="225" />
@@ -36,17 +36,19 @@
         <RadioButton x:Name ="driving_speed" Content="Drive - 105km/h" HorizontalAlignment="Left" Height="22" Margin="44,397,0,0" VerticalAlignment="Top" Click="driving_speed_click" Width="110"/>
         <RadioButton x:Name ="running_speed" Content="Run - 26.4km/h" HorizontalAlignment="Left" Height="22" Margin="44,372,0,0" VerticalAlignment="Top" Click="running_speed_click" Width="110"/>
 
-        <GroupBox Header="Speed" HorizontalAlignment="Left" Height="119" Margin="10,316,0,0" VerticalAlignment="Top" Width="225"/>
-        <GroupBox Header="Device Informtion" HorizontalAlignment="Left" Height="123" Margin="10,545,0,0" VerticalAlignment="Top" Width="225">
-            <TextBlock x:Name ="connected_dev" Height="60" Margin="0,4,2,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <GroupBox Header="Speed" HorizontalAlignment="Left" Height="132" Margin="10,316,0,0" VerticalAlignment="Top" Width="225">
+            <CheckBox x:Name="gps_drift" Content="GPS Drifting" HorizontalAlignment="Left" Height="19" Margin="28,88,0,0" VerticalAlignment="Top" Width="173"/>
         </GroupBox>
-        <Button x:Name ="device_prov" Content="More" HorizontalAlignment="Left" Height="26" Margin="36,642,0,0" VerticalAlignment="Top" Width="182" Click="device_Button_Click"/>
+        <GroupBox Header="Device Informtion" HorizontalAlignment="Left" Height="123" Margin="10,568,0,-0.333" VerticalAlignment="Top" Width="225">
+            <TextBlock x:Name ="connected_dev" Height="59" Margin="0,4,2.333,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        </GroupBox>
+        <Button x:Name ="device_prov" Content="More" HorizontalAlignment="Left" Height="26" Margin="29,655,0,0" VerticalAlignment="Top" Width="182" Click="device_Button_Click"/>
 
         <GroupBox Header="Search" HorizontalAlignment="Left" Height="189" Margin="15,15,0,0" VerticalAlignment="Top" Width="220" />
         <Button Content="Search" HorizontalAlignment="Left" Height="25" Margin="159,29,0,0" VerticalAlignment="Top" Width="59" RenderTransformOrigin="1.206,0.45" Click="search_Button_Click"/>
         <TextBox x:Name ="search_box" HorizontalAlignment="Left" Height="25" Margin="36,29,0,0" VerticalAlignment="Top" Width="118"/>
         <ListBox x:Name ="search_result_list" Margin="36,59,1055.333,0" VerticalAlignment="Top" Visibility="{Binding HasItems,RelativeSource={RelativeSource Self}}" Height="140" SelectionChanged="search_result_list_SelectionChanged"  />
-        
+
     </Grid>
 
 </Window>
