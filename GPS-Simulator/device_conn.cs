@@ -170,6 +170,8 @@ namespace GPS_Simulator
                         device.Name += " (UNPROVISIONED)";
                     }
 
+                    Devices.Add(device);
+
                     wnd_instance.Dispatcher.Invoke((Action)(() =>
                     {
                         if (Devices.Count <= 1)
@@ -180,13 +182,13 @@ namespace GPS_Simulator
                         }
                         else
                         {
-                            wnd_instance.connected_dev.Text += "Device "
+                            wnd_instance.connected_dev.Text += "\nDevice "
                             + device.Name + "(" + device.Version +
                             ") is connected!";
                         }
                     }));
 
-                    Devices.Add(device);
+                    
                     break;
 
                 case dev_op.remove_device:
@@ -219,6 +221,69 @@ namespace GPS_Simulator
 
         }
 
+        public void UpdateLocation(string Longitude, string Latitude, DeviceModel itm)
+        {
+            var size = BitConverter.GetBytes(0u);
+            Array.Reverse(size);
+
+            var num = 0u;
+            iDevice.idevice_new(out var device, itm.UDID);
+
+            var ret_handshake = lockdown.lockdownd_client_new_with_handshake(device, out var client,
+                "devicelocation");
+
+            if (ret_handshake != 0)
+            {
+                return;
+            }
+
+            if (!itm.isDevMode)
+            {
+                return;
+            }
+
+            var ret_start_service = lockdown.lockdownd_start_service(client,
+                "com.apple.dt.simulatelocation", out var service2);
+            if (ret_start_service != 0)
+            {
+                return;
+            }
+
+            var se = service.service_client_new(device, service2, out var client2);
+            if (se != 0)
+            {
+                return;
+            }
+
+            se = service.service_send(client2, size, 4u, ref num);
+            if (se != 0)
+            {
+                return;
+            }
+
+            num = 0u;
+            var bytesLocation = Encoding.ASCII.GetBytes(Latitude);
+            size = BitConverter.GetBytes((uint)Latitude.Length);
+            Array.Reverse(size);
+            se = service.service_send(client2, size, 4u, ref num);
+            se = service.service_send(client2, bytesLocation,
+                (uint)bytesLocation.Length, ref num);
+
+            bytesLocation = Encoding.ASCII.GetBytes(Longitude);
+            size = BitConverter.GetBytes((uint)Longitude.Length);
+            Array.Reverse(size);
+            se = service.service_send(client2, size, 4u, ref num);
+            se = service.service_send(client2, bytesLocation,
+                (uint)bytesLocation.Length, ref num);
+
+            device.Close();
+            device.Dispose();
+            client.Dispose();
+            client2.Dispose();
+
+            service2.Dispose();
+        }
+
         public void UpdateLocation(Location location)
         {
             // no device is connected.
@@ -227,63 +292,13 @@ namespace GPS_Simulator
                 return;
             }
 
-            iDevice.idevice_set_debug_level(1);
-
             var Longitude = location.Longitude.ToString();
             var Latitude = location.Latitude.ToString();
-
-            var size = BitConverter.GetBytes(0u);
-            Array.Reverse(size);
 
             for (int i = 0; i < Devices.Count(); i++)
             {
                 DeviceModel itm = Devices[i];
-                var num = 0u;
-                iDevice.idevice_new(out var device, itm.UDID);
-
-                var ret_handshake = lockdown.lockdownd_client_new_with_handshake(device, out var client,
-                    "devicelocation");
-                if (ret_handshake != 0)
-                {
-                    continue;
-                }
-
-                if (!itm.isDevMode)
-                {
-                    continue;
-                }
-
-                var ret_start_service = lockdown.lockdownd_start_service(client,
-                    "com.apple.dt.simulatelocation", out var service2);
-                if (ret_start_service != 0)
-                {
-                    continue;
-                }
-
-                var se = service.service_client_new(device, service2, out var client2);
-
-                se = service.service_send(client2, size, 4u, ref num);
-
-                num = 0u;
-                var bytesLocation = Encoding.ASCII.GetBytes(Latitude);
-                size = BitConverter.GetBytes((uint)Latitude.Length);
-                Array.Reverse(size);
-                se = service.service_send(client2, size, 4u, ref num);
-                se = service.service_send(client2, bytesLocation,
-                    (uint)bytesLocation.Length, ref num);
-
-                bytesLocation = Encoding.ASCII.GetBytes(Longitude);
-                size = BitConverter.GetBytes((uint)Longitude.Length);
-                Array.Reverse(size);
-                se = service.service_send(client2, size, 4u, ref num);
-                se = service.service_send(client2, bytesLocation,
-                    (uint)bytesLocation.Length, ref num);
-
-                device.Dispose();
-                client.Dispose();
-                client2.Dispose();
-
-                service2 = null;
+                UpdateLocation(Longitude, Latitude, itm);
             }
         }
 
