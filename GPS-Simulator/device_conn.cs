@@ -219,7 +219,7 @@ namespace GPS_Simulator
 
         }
 
-        public void UpdateLocation(string Longitude, string Latitude, DeviceModel itm)
+        public void UpdateLocation(string Longitude, string Latitude, string Altitude, DeviceModel itm)
         {
             var size = BitConverter.GetBytes(0u);
             Array.Reverse(size);
@@ -274,6 +274,13 @@ namespace GPS_Simulator
             se = service.service_send(client2, bytesLocation,
                 (uint)bytesLocation.Length, ref num);
 
+            bytesLocation = Encoding.ASCII.GetBytes(Altitude);
+            size = BitConverter.GetBytes((uint)Altitude.Length);
+            Array.Reverse(size);
+            se = service.service_send(client2, size, 4u, ref num);
+            se = service.service_send(client2, bytesLocation,
+                (uint)bytesLocation.Length, ref num);
+
             device.Close();
             device.Dispose();
             client.Dispose();
@@ -292,11 +299,12 @@ namespace GPS_Simulator
 
             var Longitude = location.Longitude.ToString();
             var Latitude = location.Latitude.ToString();
+            var Altitude = location.Altitude.ToString();
 
             for (int i = 0; i < Devices.Count(); i++)
             {
                 DeviceModel itm = Devices[i];
-                UpdateLocation(Longitude, Latitude, itm);
+                UpdateLocation(Longitude, Latitude, Altitude, itm);
             }
         }
 

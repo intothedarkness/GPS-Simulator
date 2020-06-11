@@ -19,13 +19,6 @@ namespace GPS_Simulator
             InitializeComponent();
 
             detailed_devinfo.ReadOnly = true;
-            
-            // only take care of the first device.
-            if (Devices.Count > 1)
-            {
-                System.Windows.Forms.MessageBox.Show("More than one device is connected, provision tool only support one device at a time.");
-                return;
-            }
 
             device = Devices[0];
             this.devinfo.Text = device.Name + "(" + device.Version + ")";

@@ -19,6 +19,10 @@ using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
+using System.Net.Http;
+using System.IO;
+using System.Threading.Tasks;
+
 namespace GPS_Simulator
 {
     public class list_item
@@ -53,6 +57,8 @@ namespace GPS_Simulator
         private static walking_timer_callback timer_callback = null;
         location_service loc_service = null;
         public Pushpin teleport_pin = null;
+
+        public string BingMapKey = @"MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU";
 
         /// <summary>
         /// main window initialization
@@ -315,6 +321,7 @@ namespace GPS_Simulator
             {
                 tele.Latitude = Convert.ToDouble(lat.Text);
                 tele.Longitude = Convert.ToDouble(lon.Text);
+                tele.Altitude = Convert.ToDouble(alt.Text);
             }
             catch
             {
@@ -396,6 +403,13 @@ namespace GPS_Simulator
 
         private void device_Button_Click(object sender, RoutedEventArgs e)
         {
+            // only take care of the first device.
+            if (location_service.GetInstance(this).Devices.Count > 1)
+            {
+                System.Windows.Forms.MessageBox.Show("More than one device is connected, provision tool only support one device at a time!");
+                return;
+            }
+
             dev_prov dlg = new dev_prov(this, location_service.GetInstance(this).Devices);
             dlg.ShowDialog();
         }
@@ -426,7 +440,6 @@ namespace GPS_Simulator
 
         private XmlDocument GetXmlResponse(string requestUrl)
         {
-            System.Diagnostics.Trace.WriteLine("Request URL (XML): " + requestUrl);
             HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {
@@ -473,6 +486,45 @@ namespace GPS_Simulator
             return result;
         }
 
+        // Format the URI from a list of locations.
+        protected string spell_elevation_query_url(List<list_item> locList)
+        {
+            // The base URI string. Fill in: 
+            // {0}: The lat/lon list, comma separated. 
+            // {1}: The key. 
+            const string BASE_URI_STRING =
+              "http://dev.virtualearth.net/REST/v1/Elevation/List?points={0}&key={1}&o=xml";
+
+            string retVal = string.Empty;
+            string locString = string.Empty;
+            for (int ndx = 0; ndx < locList.Count; ++ndx)
+            {
+                if (ndx != 0)
+                {
+                    locString += ",";
+                }
+                locString += locList[ndx].loc.Latitude.ToString() + "," + locList[ndx].loc.Longitude.ToString();
+            }
+            retVal = string.Format(BASE_URI_STRING, locString, BingMapKey);
+            return retVal;
+        }
+
+        protected List<double> get_elevations(string url)
+        {
+            List<double> ret = new List<double>();
+            XmlDocument res = GetXmlResponse(url);
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(res.NameTable);
+            nsmgr.AddNamespace("rest", "http://schemas.microsoft.com/search/local/ws/rest/v1");
+
+            XmlNode elevationSets = res.SelectSingleNode("//rest:Elevations", nsmgr);
+            foreach (XmlNode node in elevationSets.ChildNodes)
+            {
+                ret.Add(ConvertToDouble(node.InnerText));
+            }
+
+            return ret;
+        }
+
         private void search_Button_Click(object sender, RoutedEventArgs e)
         {
             search_result_list.Items.Clear();
@@ -483,7 +535,6 @@ namespace GPS_Simulator
                 return;
             }
 
-            string BingMapKey = @"MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU";
             string requestUrl = @"http://dev.virtualearth.net/REST/v1/Locations/" + search_box.Text + "?o=xml&key=" + BingMapKey;
 
             // Make the request and get the response
@@ -496,18 +547,32 @@ namespace GPS_Simulator
             // Get all geocode locations in the response 
             XmlNodeList locationElements = geocodeResponse.SelectNodes("//rest:Location", nsmgr);
 
-            foreach (XmlNode locnode in locationElements)
+            if (locationElements.Count <= 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < locationElements.Count; i++)
             {
                 Location loc = new Location();
-                loc.Latitude = ConvertToDouble(locnode.SelectSingleNode(".//rest:Latitude", nsmgr).InnerText);
-                loc.Longitude = ConvertToDouble(locnode.SelectSingleNode(".//rest:Longitude", nsmgr).InnerText);
+                loc.Latitude = ConvertToDouble(locationElements[i].SelectSingleNode(".//rest:Latitude", nsmgr).InnerText);
+                loc.Longitude = ConvertToDouble(locationElements[i].SelectSingleNode(".//rest:Longitude", nsmgr).InnerText);
 
                 list_item it = new list_item();
                 it.loc = loc;
-                it.Name = locnode.SelectSingleNode(".//rest:Name", nsmgr).InnerText;
+                it.Name = locationElements[i].SelectSingleNode(".//rest:Name", nsmgr).InnerText;
 
                 g_query_result.Add(it);
                 search_result_list.Items.Add(it.Name);
+            }
+
+            // get the elevations for these addresses.
+            string elevationUrl = spell_elevation_query_url(g_query_result);
+            List<double> alt_list = get_elevations(elevationUrl);
+
+            for (int i = 0; i < g_query_result.Count; i++)
+            {
+                g_query_result[i].loc.Altitude = alt_list[i];
             }
         }
 
@@ -522,6 +587,7 @@ namespace GPS_Simulator
                 list_item it = g_query_result[search_result_list.SelectedIndex];
                 lat.Text = it.loc.Latitude.ToString();
                 lon.Text = it.loc.Longitude.ToString();
+                alt.Text = it.loc.Altitude.ToString();
             }
         }
     }
