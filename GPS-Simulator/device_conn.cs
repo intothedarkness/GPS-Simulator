@@ -15,7 +15,6 @@ using System.Threading;
 
 namespace GPS_Simulator
 {
-
     class device_utils
     {
         public const string ddi_repo_url = @"https://github.com/intothedarkness/iOSDDIRepo/raw/master/";
@@ -35,7 +34,7 @@ namespace GPS_Simulator
                 lockdownd_client_new_with_handshake(device, out var client,
                 "idevicelocation");
 
-            // determine if the device is in dev mode by probing 
+            // Determine if the device is in dev mode by probing 
             // with a service
             var ret_start_service = LibiMobileDevice.Instance.Lockdown.
                 lockdownd_start_service(client,
@@ -50,6 +49,7 @@ namespace GPS_Simulator
     }
     class location_service
     {
+        public List<string> DevicesUdid = new List<string>();
         public List<DeviceModel> Devices = new List<DeviceModel>();
         public IiDeviceApi iDevice = LibiMobileDevice.Instance.iDevice;
         public ILockdownApi lockdown = LibiMobileDevice.Instance.Lockdown;
@@ -60,6 +60,65 @@ namespace GPS_Simulator
         public MainWindow wnd_instance = null;
         private location_service(MainWindow wnd) { wnd_instance = wnd; }
         public static location_service GetInstance(MainWindow wnd) => _instance ?? (_instance = new location_service(wnd));
+
+        private int create_new_device(string udid, ref DeviceModel device)
+        {
+            iDeviceHandle iDeviceHandle;
+            iDevice.idevice_new(out iDeviceHandle, udid).ThrowOnError();
+            LockdownClientHandle lockdownClientHandle;
+
+            var ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle,
+                out lockdownClientHandle, "Quamotion");
+            if (ret_handshake != 0)
+            {
+                return -1;
+            }
+
+            var ret_get_devname = lockdown.lockdownd_get_device_name(lockdownClientHandle,
+                out var deviceName);
+            if (ret_get_devname != 0)
+            {
+                return -1;
+            }
+
+            ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle,
+                out lockdownClientHandle, "waua");
+            if (ret_handshake != 0)
+            {
+                return -1;
+            }
+
+            var ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null,
+                "ProductVersion", out var node);
+            if (ret_get_devname != 0)
+            {
+                return -1;
+            }
+
+            LibiMobileDevice.Instance.Plist.plist_get_string_val(node, out var version);
+
+            ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null,
+                "BuildVersion", out node);
+            if (ret_get_devname != 0)
+            {
+                return -1;
+            }
+
+            LibiMobileDevice.Instance.Plist.plist_get_string_val(node, out var bldVersion);
+
+            iDeviceHandle.Dispose();
+            lockdownClientHandle.Dispose();
+
+            device.UDID = udid;
+            device.Name = deviceName;
+            device.Version = version;
+            device.BuildVersion = bldVersion;
+            device.ShortVersion = string.Join(".", version.Split('.').Take(2));
+            device.FullVersion = string.Join(".", version.Split('.').Take(2)) + "(" + bldVersion + ")";
+            device.isDevMode = device_utils.is_device_on_dev_mode(udid);
+            
+            return 0;
+        }
 
         public void ListeningDevice()
         {
@@ -75,76 +134,31 @@ namespace GPS_Simulator
                 while (true)
                 {
                     deviceError = iDevice.idevice_get_device_list(out devices, ref num);
+
                     if (devices.Count > 0)
                     {
-                        var lst = Devices.Select(s => s.UDID).ToList().Except(devices).ToList();
-                        var dst = devices.Except(Devices.Select(s => s.UDID)).ToList();
-
-                        foreach (string udid in dst)
+                        // get the device is newly added
+                        var new_devices = devices.Except(Devices.Select(s => s.UDID)).ToList();
+                        foreach (string udid in new_devices)
                         {
-                            iDeviceHandle iDeviceHandle;
-                            iDevice.idevice_new(out iDeviceHandle, udid).ThrowOnError();
-                            LockdownClientHandle lockdownClientHandle;
-
-                            var ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle,
-                                out lockdownClientHandle, "Quamotion");
-                            if (ret_handshake != 0)
+                            DeviceModel device = new DeviceModel();
+                            if(0 == create_new_device(udid, ref device))
                             {
-                                continue;
+                                device_add_remove(device, dev_op.add_device);
                             }
+                        }
 
-                            var ret_get_devname = lockdown.lockdownd_get_device_name(lockdownClientHandle,
-                                out var deviceName);
-                            if (ret_get_devname != 0)
+                        // remove the device is no longer connected.
+                        for (int i = 0; i < Devices.Count; i++)
+                        {
+                            if (!devices.Contains(Devices[i].UDID))
                             {
-                                continue;
+                                device_add_remove(Devices[i], dev_op.remove_device);
                             }
-
-                            ret_handshake = lockdown.lockdownd_client_new_with_handshake(iDeviceHandle,
-                                out lockdownClientHandle, "waua");
-                            if (ret_handshake != 0)
-                            {
-                                continue;
-                            }
-
-                            var ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null,
-                                "ProductVersion", out var node);
-                            if (ret_get_devname != 0)
-                            {
-                                continue;
-                            }
-
-                            LibiMobileDevice.Instance.Plist.plist_get_string_val(node, out var version);
-
-                            ret_get_value = lockdown.lockdownd_get_value(lockdownClientHandle, null,
-                                "BuildVersion", out node);
-                            if (ret_get_devname != 0)
-                            {
-                                continue;
-                            }
-
-                            LibiMobileDevice.Instance.Plist.plist_get_string_val(node, out var bldVersion);
-
-                            iDeviceHandle.Dispose();
-                            lockdownClientHandle.Dispose();
-                            var device = new DeviceModel
-                            {
-                                UDID = udid,
-                                Name = deviceName,
-                                Version = version,
-                                BuildVersion = bldVersion,
-                                ShortVersion = string.Join(".", version.Split('.').Take(2)),
-                                FullVersion = string.Join(".", version.Split('.').Take(2)) + "(" + bldVersion + ")",
-                                isDevMode = device_utils.is_device_on_dev_mode(udid)
-                            };
-
-                            device_add_remove(device, dev_op.add_device);
                         }
                     }
-                    else
-                    {
-                        device_add_remove(new DeviceModel(), dev_op.clear_all);
-                    }
+
+                    refresh_device_info();
                     Thread.Sleep(1000);
                 }
             });
@@ -162,61 +176,43 @@ namespace GPS_Simulator
             switch (op_type)
             {
                 case dev_op.add_device:
-
                     if (device.isDevMode == false)
                     {
                         device.Name += " (UNPROVISIONED)";
                     }
-
                     Devices.Add(device);
-
-                    wnd_instance.Dispatcher.Invoke((Action)(() =>
-                    {
-                        if (Devices.Count <= 1)
-                        {
-                            wnd_instance.connected_dev.Text = "Device "
-                            + device.Name + "(" + device.Version +
-                            ") is connected!";
-                        }
-                        else
-                        {
-                            wnd_instance.connected_dev.Text += "\nDevice "
-                            + device.Name + "(" + device.Version +
-                            ") is connected!";
-                        }
-                    }));
-
-
                     break;
 
                 case dev_op.remove_device:
-                    wnd_instance.Dispatcher.Invoke((Action)(() =>
-                    {
-                        wnd_instance.connected_dev.Text += "Device "
-                        + device.Name + "(" + device.Version +
-                        ") is disconnected!";
-                    }));
-
                     Devices.Remove(device);
                     break;
 
                 case dev_op.clear_all:
-                    wnd_instance.Dispatcher.Invoke((Action)(() =>
-                    {
-                        wnd_instance.connected_dev.Text = "No device is connected!";
-                    }));
-
                     Devices.Clear();
                     break;
 
                 default: break;
             }
+        }
 
+        private void refresh_device_info()
+        {
             wnd_instance.Dispatcher.Invoke((Action)(() =>
             {
                 wnd_instance.device_prov.IsEnabled = (Devices.Count >= 1);
-            }));
 
+                wnd_instance.connected_dev.Text = "";
+                foreach (DeviceModel dev in Devices)
+                {
+                    wnd_instance.connected_dev.Text += dev.Name;
+                    wnd_instance.connected_dev.Text += " is connected.\n";
+                }
+
+                if (Devices.Count == 0)
+                {
+                    wnd_instance.connected_dev.Text = "No iOS device is connected.\n";
+                }
+            }));
         }
 
         public void UpdateLocation(string Longitude, string Latitude, string Altitude, DeviceModel itm)
@@ -306,56 +302,6 @@ namespace GPS_Simulator
                 DeviceModel itm = Devices[i];
                 UpdateLocation(Longitude, Latitude, Altitude, itm);
             }
-        }
-
-        public void ClearLocation()
-        {
-            if (Devices.Count == 0)
-            {
-                return;
-            }
-
-            iDevice.idevice_set_debug_level(1);
-
-            foreach (var itm in Devices)
-            {
-                var num = 0u;
-                iDevice.idevice_new(out var device, itm.UDID);
-                var lockdowndError = lockdown.lockdownd_client_new_with_handshake(device,
-                    out LockdownClientHandle client, "com.alpha.jailout");
-                if (lockdowndError != 0)
-                {
-                    continue;
-                }
-
-                lockdowndError = lockdown.lockdownd_start_service(client, "" +
-                    "com.apple.dt.simulatelocation", out var service2);
-                if (lockdowndError != 0)
-                {
-                    continue;
-                }
-
-                var se = service.service_client_new(device, service2, out var client2);
-                if (se != 0)
-                {
-                    continue;
-                }
-
-                se = service.service_send(client2, new byte[4] { 0, 0, 0, 0 }, 4, ref num);
-                if (se != 0)
-                {
-                    continue;
-                }
-
-                se = service.service_send(client2, new byte[4] { 0, 0, 0, 1 }, 4, ref num);
-                if (se != 0)
-                {
-                    continue;
-                }
-
-                device.Dispose();
-                client.Dispose();
-            };
         }
     }
 

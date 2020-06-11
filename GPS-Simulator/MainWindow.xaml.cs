@@ -389,6 +389,13 @@ namespace GPS_Simulator
                 teleport_pin = new Pushpin();
             }
 
+            string elevationUrl = spell_elevation_query_url(pinLocation);
+            List<double> elevations = get_elevations(elevationUrl);
+            if (elevations.Count > 0)
+            {
+                pinLocation.Altitude = elevations[0];
+            }
+
             teleport_pin.Location = pinLocation;
 
             // Adds the pushpin to the map.
@@ -397,6 +404,7 @@ namespace GPS_Simulator
             // update the coords
             lat.Text = pinLocation.Latitude.ToString();
             lon.Text = pinLocation.Longitude.ToString();
+            alt.Text = pinLocation.Altitude.ToString();
 
             location_service.GetInstance(this).UpdateLocation(pinLocation);
         }
@@ -453,39 +461,6 @@ namespace GPS_Simulator
             }
         }
 
-        private double ConvertToDouble(string s)
-        {
-            char systemSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
-            double result = 0;
-            try
-            {
-                if (s != null)
-                    if (!s.Contains(","))
-                        result = double.Parse(s, CultureInfo.InvariantCulture);
-                    else
-                        result = Convert.ToDouble(s.Replace(".", systemSeparator.ToString()).Replace(",", systemSeparator.ToString()));
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    result = Convert.ToDouble(s);
-                }
-                catch
-                {
-                    try
-                    {
-                        result = Convert.ToDouble(s.Replace(",", ";").Replace(".", ",").Replace(";", "."));
-                    }
-                    catch
-                    {
-                        throw new Exception("Wrong string-to-double format");
-                    }
-                }
-            }
-            return result;
-        }
-
         // Format the URI from a list of locations.
         protected string spell_elevation_query_url(List<list_item> locList)
         {
@@ -509,6 +484,20 @@ namespace GPS_Simulator
             return retVal;
         }
 
+        // spell the url for single point.
+        protected string spell_elevation_query_url(Location loc)
+        {
+            // The base URI string. Fill in: 
+            // {0}: The lat/lon list, comma separated. 
+            // {1}: The key. 
+            const string BASE_URI_STRING =
+              "http://dev.virtualearth.net/REST/v1/Elevation/List?points={0}&key={1}&o=xml";
+
+            string locString = loc.Latitude.ToString() + "," + loc.Longitude.ToString();
+            return string.Format(BASE_URI_STRING, locString, BingMapKey);
+            
+        }
+
         protected List<double> get_elevations(string url)
         {
             List<double> ret = new List<double>();
@@ -519,7 +508,7 @@ namespace GPS_Simulator
             XmlNode elevationSets = res.SelectSingleNode("//rest:Elevations", nsmgr);
             foreach (XmlNode node in elevationSets.ChildNodes)
             {
-                ret.Add(ConvertToDouble(node.InnerText));
+                ret.Add(Convert.ToDouble(node.InnerText));
             }
 
             return ret;
@@ -555,8 +544,8 @@ namespace GPS_Simulator
             for (int i = 0; i < locationElements.Count; i++)
             {
                 Location loc = new Location();
-                loc.Latitude = ConvertToDouble(locationElements[i].SelectSingleNode(".//rest:Latitude", nsmgr).InnerText);
-                loc.Longitude = ConvertToDouble(locationElements[i].SelectSingleNode(".//rest:Longitude", nsmgr).InnerText);
+                loc.Latitude = Convert.ToDouble(locationElements[i].SelectSingleNode(".//rest:Latitude", nsmgr).InnerText);
+                loc.Longitude = Convert.ToDouble(locationElements[i].SelectSingleNode(".//rest:Longitude", nsmgr).InnerText);
 
                 list_item it = new list_item();
                 it.loc = loc;
