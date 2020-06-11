@@ -157,6 +157,10 @@ namespace GPS_Simulator
                             }
                         }
                     }
+                    else
+                    {
+                        Devices.Clear();
+                    }
 
                     refresh_device_info();
                     Thread.Sleep(1000);
