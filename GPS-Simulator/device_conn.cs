@@ -174,7 +174,6 @@ namespace GPS_Simulator
             remove_device = 2,
             clear_all = 3
         }
-
         public void device_add_remove(DeviceModel device, dev_op op_type)
         {
             switch (op_type)

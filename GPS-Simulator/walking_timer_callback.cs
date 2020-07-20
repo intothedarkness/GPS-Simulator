@@ -154,6 +154,7 @@ namespace GPS_Simulator
             // check if the potential next step is out of 
             // the range of current segment.
             double dis_walk_500ms = walking_speed / 2;
+
             if (dis_walk_500ms < dis_to_next_seg)
             {
                 // current segment.
@@ -173,6 +174,11 @@ namespace GPS_Simulator
                 if (m_cur_seg_index >= m_polyline.Locations.Count() - 1)
                 {
                     m_cur_seg_index = 0;
+
+                    // reverse the walk AB --> BA -->AB.
+                    for (int i = 0; i < m_polyline.Locations.Count; i++)
+                        m_polyline.Locations.Move(m_polyline.Locations.Count - 1, i);
+
                     return m_polyline.Locations[0];
                 }
 
