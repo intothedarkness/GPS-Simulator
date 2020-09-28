@@ -134,29 +134,41 @@ namespace GPS_Simulator
             this.detailed_devinfo.Text += "Device provisioning start...\n";
 
             // 1.download the DDI package.
-            this.detailed_devinfo.Text += "1. Download provisioning package for your device....\n";
-            string prov_pkg_url = device_utils.get_ddi_image_url(device);
+            string cur_dir = AppDomain.CurrentDomain.BaseDirectory + "DDILocalRepo\\";
+            string zip_file = device.FullVersion + ".zip";
 
-            string local_package_file = @"C:\temp\" + device.FullVersion + ".zip";
-            try
+            this.detailed_devinfo.Text += "1. Searching provisioning package" + zip_file + "for your device from directory : "+ cur_dir + "\n";
+            string local_package_file = cur_dir + device.FullVersion + ".zip";
+            if (System.IO.File.Exists(local_package_file))
             {
-                WebClient webClient = new WebClient();
-                webClient.Headers.Add("cookie", "");
-                webClient.DownloadFile(new Uri(prov_pkg_url), local_package_file);
+                this.detailed_devinfo.Text += "Found the package at " + local_package_file + "\n";
             }
-            catch (Exception)
+            else
             {
-                this.detailed_devinfo.Text += "we can't find" + device.FullVersion + ".zip from our repository," +
-                    " please go to apple.com download the image and manually provision your device. \n";
-                return;
-            }
+                string prov_pkg_url = device_utils.get_ddi_image_url(device);
 
+                this.detailed_devinfo.Text += "can't locate package:" + local_package_file + "\n";
+                this.detailed_devinfo.Text += "trying to download the package from:" + prov_pkg_url + "....\n";
+
+                try
+                {
+                    WebClient webClient = new WebClient();
+                    webClient.Headers.Add("cookie", "");
+                    webClient.DownloadFile(new Uri(prov_pkg_url), local_package_file);
+                }
+                catch (Exception)
+                {
+                    this.detailed_devinfo.Text += "we can't find" + device.FullVersion + ".zip from our repository," +
+                        " please go to apple.com download the image and manually provision your device. \n";
+                    return;
+                }
+            }
             this.detailed_devinfo.Text += "Done. \n";
 
             // 2. unzip the package.. 
             // FIXME: better to use async downloader.
             this.detailed_devinfo.Text += "2. Unzipping the package... \n";
-            string local_folder = @"c:\temp\";
+            string local_folder = cur_dir;
 
             // clear up the directory if it has anything there
             if (System.IO.Directory.Exists(local_folder + device.FullVersion))
@@ -202,6 +214,13 @@ namespace GPS_Simulator
                 this.detailed_devinfo.Text += "Done.\n";
                 this.detailed_devinfo.Text += "Congratulations, your device is provisioned successfully, " +
                     "please reconnect the USB cable to your PC.\n";
+
+                // clear up the directory
+                if (System.IO.Directory.Exists(local_folder + device.FullVersion))
+                {
+                    System.IO.Directory.Delete(local_folder + device.FullVersion, true);
+                }
+
             }
             else
             {

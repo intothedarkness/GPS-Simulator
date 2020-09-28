@@ -118,6 +118,10 @@ namespace GPS_Simulator
             {
                 device_prov.IsEnabled = false;
             }
+
+            string ddi_path = AppDomain.CurrentDomain.BaseDirectory + "DDILocalRepo\\";
+            if (!System.IO.Directory.Exists(ddi_path))
+                System.IO.Directory.CreateDirectory(ddi_path);
         }
         /// <summary>
         ///  load GPX track files.
