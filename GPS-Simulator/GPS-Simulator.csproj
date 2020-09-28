@@ -156,6 +156,12 @@
   <ItemGroup>
     <Resource Include="icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="SharpGpx\SharpGpx.csproj">
+      <Project>{4fd2244c-c189-4166-bf60-562893b1521d}</Project>
+      <Name>SharpGpx</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\iMobileDevice-net.1.2.186\build\net45\iMobileDevice-net.targets" Condition="Exists('..\packages\iMobileDevice-net.1.2.186\build\net45\iMobileDevice-net.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

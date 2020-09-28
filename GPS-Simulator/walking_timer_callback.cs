@@ -175,9 +175,19 @@ namespace GPS_Simulator
                 {
                     m_cur_seg_index = 0;
 
-                    // reverse the walk AB --> BA -->AB.
-                    for (int i = 0; i < m_polyline.Locations.Count; i++)
-                        m_polyline.Locations.Move(m_polyline.Locations.Count - 1, i);
+                    switch(m_wnd.cur_routing_mode)
+                    {
+                        case MainWindow.e_routing_mode.loop_to_start:
+                            break;
+                        case MainWindow.e_routing_mode.reverse_walk:
+                            // reverse the walk AB --> BA -->AB.
+                            for (int i = 0; i < m_polyline.Locations.Count; i++)
+                                m_polyline.Locations.Move(m_polyline.Locations.Count - 1, i);
+                            break;
+                        case MainWindow.e_routing_mode.stop_at_end:
+                            m_wnd.switch_walking_state();
+                            break;
+                    }
 
                     return m_polyline.Locations[0];
                 }

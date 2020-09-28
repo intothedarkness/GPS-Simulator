@@ -23,6 +23,9 @@ using System.Net.Http;
 using System.IO;
 using System.Threading.Tasks;
 
+using SharpGpx;
+using SharpGpx.GPX1_1;
+
 namespace GPS_Simulator
 {
     public class list_item
@@ -49,7 +52,22 @@ namespace GPS_Simulator
             walking_stopped = 3
         }
 
+        public enum e_click_mode
+        {
+            create_gpx = 1,
+            teleport = 2
+        }
+
+        public enum e_routing_mode
+        {
+            stop_at_end = 1,
+            loop_to_start = 2,
+            reverse_walk = 3
+        }
+
+        public e_click_mode cur_click_mode = e_click_mode.teleport;
         public e_walking_state cur_walking_state = e_walking_state.walking_stopped;
+        public e_routing_mode cur_routing_mode = e_routing_mode.reverse_walk;
 
         public static string g_gpx_file_name = null;
         public MapPolyline g_polyline = null;
@@ -57,6 +75,8 @@ namespace GPS_Simulator
         private static walking_timer_callback timer_callback = null;
         location_service loc_service = null;
         public Pushpin teleport_pin = null;
+
+        LocationCollection gpx_locations = new LocationCollection();
 
         public string BingMapKey = @"MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU";
 
@@ -71,6 +91,13 @@ namespace GPS_Simulator
             walking_speed.IsChecked = true;
             running_speed.IsChecked = false;
             driving_speed.IsChecked = false;
+
+            // default is reverse walking
+            stop_at_end.IsChecked = false;
+            loop_to_start.IsChecked = false;
+            loop_reverse.IsChecked = true;
+
+            gpx_save_button.IsEnabled = false;
 
             // load native libraries for iDevice
             NativeLibraries.Load();
@@ -238,6 +265,22 @@ namespace GPS_Simulator
             timer_callback.walking_speed = c_fast_walking_speed * 3;
         }
 
+
+        private void stop_at_end_click(object sender, RoutedEventArgs e)
+        {
+            cur_routing_mode = e_routing_mode.stop_at_end;
+        }
+
+        private void loop_to_start_click(object sender, RoutedEventArgs e)
+        {
+            cur_routing_mode = e_routing_mode.loop_to_start;
+        }
+
+        private void loop_reverse_click(object sender, RoutedEventArgs e)
+        {
+            cur_routing_mode = e_routing_mode.reverse_walk;
+        }
+
         /// <summary>
         ///  start to walk and auto repeat.
         /// </summary>
@@ -348,12 +391,7 @@ namespace GPS_Simulator
             location_service.GetInstance(this).UpdateLocation(tele);
         }
 
-        /// <summary>
-        /// double click and teleport.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Map_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void teleport_click(object sender, MouseButtonEventArgs e)
         {
             // Disables double-click teleport when it is in walking mode.
             if (cur_walking_state == e_walking_state.walking_active)
@@ -409,6 +447,82 @@ namespace GPS_Simulator
             location_service.GetInstance(this).UpdateLocation(pinLocation);
         }
 
+        private void Map_MouseSingleLeftClick(object sender, MouseButtonEventArgs e)
+        {
+            if (cur_click_mode != e_click_mode.create_gpx)
+                return;
+
+            e.Handled = true;
+
+
+
+            Point mousePosition = e.GetPosition(this);
+            mousePosition.Offset(-Width * 3 / 16, 0);
+
+            if (teleport_pin != null)
+            {
+                myMap.Children.Remove(teleport_pin);
+            }
+
+            Pushpin waypoint_pin = new Pushpin();
+
+            // Convert the mouse coordinates to a location on the map
+            Location pinLocation = myMap.ViewportPointToLocation(mousePosition);
+
+            waypoint_pin.Location = pinLocation;
+            string elevationUrl = spell_elevation_query_url(pinLocation);
+            List<double> elevations = get_elevations(elevationUrl);
+            if (elevations.Count > 0)
+            {
+                pinLocation.Altitude = elevations[0];
+            }
+
+            // Adds the pushpin to the map.
+            myMap.Children.Add(waypoint_pin);
+            gpx_locations.Add(pinLocation);
+
+            if (gpx_locations.Count > 0)
+                gpx_save_button.IsEnabled = true;
+
+            // draw the tack on map
+            MapPolyline polyline = new MapPolyline();
+            polyline.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.
+                Colors.Blue);
+
+            polyline.StrokeThickness = 3;
+            polyline.Opacity = 0.7;
+
+            polyline.Locations = gpx_locations;
+            myMap.Children.Add(polyline);
+            
+            way_points.Text += pinLocation.Longitude.ToString() + "," + pinLocation.Latitude.ToString() + "," + pinLocation.Altitude.ToString() + "\n";
+
+        }
+
+        private void Map_MouseSingleRightClick(object sender, MouseButtonEventArgs e)
+        {
+            // clear the gpx buffer.
+            way_points.Text = "";
+            gpx_locations.Clear();
+            myMap.Children.Clear();
+            gpx_save_button.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// double click and teleport.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Map_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            switch(cur_click_mode)
+            {
+                case e_click_mode.teleport:
+                    teleport_click(sender, e);
+                    break;
+            }
+        }
+
         private void device_Button_Click(object sender, RoutedEventArgs e)
         {
             // only take care of the first device.
@@ -422,7 +536,7 @@ namespace GPS_Simulator
             dlg.ShowDialog();
         }
 
-        private void stop_Button_Click(object sender, RoutedEventArgs e)
+        public void switch_walking_state()
         {
             switch (cur_walking_state)
             {
@@ -444,6 +558,11 @@ namespace GPS_Simulator
 
                 default: break;
             }
+        }
+
+        private void stop_Button_Click(object sender, RoutedEventArgs e)
+        {
+            switch_walking_state();
         }
 
         private XmlDocument GetXmlResponse(string requestUrl)
@@ -577,6 +696,76 @@ namespace GPS_Simulator
                 lat.Text = it.loc.Latitude.ToString();
                 lon.Text = it.loc.Longitude.ToString();
                 alt.Text = it.loc.Altitude.ToString();
+            }
+        }
+
+        private void gpx_create_Click(object sender, RoutedEventArgs e)
+        {
+            switch (cur_click_mode)
+            {
+                case e_click_mode.create_gpx: // creating mode -->teleport mode
+                    cur_click_mode = e_click_mode.teleport;
+                    gpx_create_button.Content = "Create GPX";
+                    way_points.Text = "";
+                    gpx_locations.Clear();
+                    myMap.Children.Clear();
+                    gpx_save_button.IsEnabled = false;
+                    break;
+
+                case e_click_mode.teleport:
+                    System.Windows.Forms.MessageBox.Show("entering GPX creation mode, single left click to set way point, Right click reset the waypoints, click the \"Save GPX\" button to save it to a GPX file.");
+                    cur_click_mode = e_click_mode.create_gpx;
+                    gpx_create_button.Content = "Back to Teleport Mode";
+                    break;
+            }
+        }
+
+        private void gpx_save_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "GPX file|*.gpx";
+            saveFileDialog1.Title = "Save To GPX File";
+            saveFileDialog1.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.
+            if (saveFileDialog1.FileName != "")
+            {
+                GpxClass track = new GpxClass();
+
+                wptTypeCollection trkpt = new wptTypeCollection();
+                foreach (Location lc in gpx_locations)
+                {
+                    wptType wpt = new wptType();
+                    wpt.lat = (decimal)lc.Latitude;
+                    wpt.lon = (decimal)lc.Longitude;
+                    wpt.ele = (decimal)lc.Altitude;
+                    wpt.eleSpecified = true;
+                    trkpt.Add(wpt);
+                }
+
+                trksegType trk_seg = new trksegType();
+                trk_seg.trkpt = trkpt;
+
+                trksegTypeCollection trk_seg_cl = new trksegTypeCollection();
+                trk_seg_cl.Addtrkseg(trk_seg);
+
+                trkType trk = new trkType();
+                trk.name = DateTime.Now.ToString("MM/dd/yyyy h:mm tt");
+                trk.trkseg = trk_seg_cl;
+
+                track.trk = new trkTypeCollection();
+                track.trk.Add(trk);
+                track.ToFile(saveFileDialog1.FileName);
+
+                System.Windows.Forms.MessageBox.Show("GPX file is saved!");
+
+                // back to the teleport mode.
+                cur_click_mode = e_click_mode.teleport;
+                gpx_create_button.Content = "Create GPX";
+                way_points.Text = "";
+                gpx_locations.Clear();
+                myMap.Children.Clear();
+                gpx_save_button.IsEnabled = false;
             }
         }
     }

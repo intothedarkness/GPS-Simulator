@@ -1,0 +1,7 @@
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\bin\Debug\SharpGpx.dll
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\bin\Debug\SharpGpx.pdb
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\obj\Debug\SharpGpx.csprojAssemblyReference.cache
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\obj\Debug\SharpGpx.Properties.Resources.resources
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\obj\Debug\SharpGpx.csproj.GenerateResource.cache
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\obj\Debug\SharpGpx.dll
+C:\Users\zhang\Downloads\SharpGpx-master\SharpGpx\obj\Debug\SharpGpx.pdb

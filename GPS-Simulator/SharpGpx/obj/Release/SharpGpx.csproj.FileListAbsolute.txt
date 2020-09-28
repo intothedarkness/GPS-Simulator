@@ -1,0 +1,7 @@
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\bin\Release\SharpGpx.dll
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\bin\Release\SharpGpx.pdb
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\obj\Release\SharpGpx.csprojAssemblyReference.cache
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\obj\Release\SharpGpx.Properties.Resources.resources
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\obj\Release\SharpGpx.csproj.GenerateResource.cache
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\obj\Release\SharpGpx.dll
+C:\Users\zhang\source\repos\intothedarkness\GPS-Simulator\GPS-Simulator\SharpGpx\obj\Release\SharpGpx.pdb
