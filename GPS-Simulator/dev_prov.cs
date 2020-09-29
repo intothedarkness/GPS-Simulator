@@ -137,7 +137,7 @@ namespace GPS_Simulator
             string cur_dir = AppDomain.CurrentDomain.BaseDirectory + "DDILocalRepo\\";
             string zip_file = device.FullVersion + ".zip";
 
-            this.detailed_devinfo.Text += "1. Searching provisioning package" + zip_file + "for your device from directory : "+ cur_dir + "\n";
+            this.detailed_devinfo.Text += "1. Searching provisioning package" + zip_file + "for your device from directory : " + cur_dir + "\n";
             string local_package_file = cur_dir + device.FullVersion + ".zip";
             if (System.IO.File.Exists(local_package_file))
             {
@@ -205,7 +205,7 @@ namespace GPS_Simulator
             p.StartInfo.Arguments = dev_image_path;
 
             // Do not show the console window.
-            p.StartInfo.WindowStyle  = System.Diagnostics.ProcessWindowStyle.Hidden;
+            p.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             p.Start();
             p.WaitForExit();
 

@@ -11,9 +11,9 @@ namespace GPS_Simulator
     /// </summary>
     public partial class App : Application
     {
-       
+
         // Center = "47.6205, -122.3493"
         // myMap.Center.Latitude = 47.6205; //  Properties.Settings.Default.home_lat;
-            // myMap.Center.Longitude = -122.3493; // Properties.Settings.Default.home_lat;
+        // myMap.Center.Longitude = -122.3493; // Properties.Settings.Default.home_lat;
     }
 }

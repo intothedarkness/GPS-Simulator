@@ -90,15 +90,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="main\device_tab.cs" />
     <Compile Include="dev_prov.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dev_prov.Designer.cs">
       <DependentUpon>dev_prov.cs</DependentUpon>
     </Compile>
-    <Compile Include="device_conn.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="walking_timer_callback.cs" />
+    <Compile Include="main\device_conn.cs" />
+    <Compile Include="main\gpxtool_tab.cs" />
+    <Compile Include="main\Settings.cs" />
+    <Compile Include="main\teleport_tab.cs" />
+    <Compile Include="main\walking_tab.cs" />
+    <Compile Include="main\walking_timer_callback.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
