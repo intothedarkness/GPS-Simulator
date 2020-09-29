@@ -136,8 +136,11 @@ namespace GPS_Simulator
             polyline.Locations = gpx_locations;
             myMap.Children.Add(polyline);
 
-            way_points.Text += pinLocation.Longitude.ToString() + "," + pinLocation.Latitude.ToString() + "," + pinLocation.Altitude.ToString() + "\n";
-
+            way_points.Text += "WayPoint(" 
+                + pinLocation.Longitude.ToString("F4") + "," 
+                + pinLocation.Latitude.ToString("F4") + "," 
+                + pinLocation.Altitude.ToString() + 
+                ")\n";
         }
 
         private void Map_MouseSingleRightClick(object sender, MouseButtonEventArgs e)

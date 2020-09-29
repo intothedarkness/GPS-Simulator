@@ -71,7 +71,9 @@
                 <Grid>
                     <Button x:Name ="gpx_create_button" Content="Create GPX" HorizontalAlignment="Left" Height="27" Margin="10,10,0,0" VerticalAlignment="Top" Width="201" Click="gpx_create_Click"/>
                     <Button x:Name ="gpx_save_button" Content="Save GPX" HorizontalAlignment="Left" Height="27" Margin="10,37,0,0" VerticalAlignment="Top" Width="201" Click="gpx_save_Click"/>
-                    <TextBlock x:Name ="way_points"  Margin="10,77,9.571,193.714"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,78,9.571,113.714" >
+                        <TextBlock x:Name ="way_points"  TextWrapping="Wrap"/>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
 
