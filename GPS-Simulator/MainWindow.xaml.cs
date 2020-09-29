@@ -663,7 +663,7 @@ namespace GPS_Simulator
                 return;
             }
 
-            string requestUrl = @"http://dev.virtualearth.net/REST/v1/Locations/" + search_box.Text + "?o=xml&key=" + BingMapKey;
+            string requestUrl = @"http://dev.virtualearth.net/REST/v1/Locations/" + search_box.Text.Trim() + "?o=xml&key=" + BingMapKey;
 
             // Make the request and get the response
             XmlDocument geocodeResponse = GetXmlResponse(requestUrl);
