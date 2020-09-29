@@ -18,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
+using System.Configuration;
 
 using System.Net.Http;
 using System.IO;
@@ -122,6 +123,12 @@ namespace GPS_Simulator
             string ddi_path = AppDomain.CurrentDomain.BaseDirectory + "DDILocalRepo\\";
             if (!System.IO.Directory.Exists(ddi_path))
                 System.IO.Directory.CreateDirectory(ddi_path);
+
+            Location map_center = new Location();
+            map_center.Latitude = Properties.Settings.Default.home_lat;
+            map_center.Longitude = Properties.Settings.Default.home_lon;
+
+            myMap.Center = map_center;
         }
         /// <summary>
         ///  load GPX track files.
@@ -505,11 +512,19 @@ namespace GPS_Simulator
 
         private void Map_MouseSingleRightClick(object sender, MouseButtonEventArgs e)
         {
-            // clear the gpx buffer.
-            way_points.Text = "";
-            gpx_locations.Clear();
-            myMap.Children.Clear();
-            gpx_save_button.IsEnabled = false;
+            switch (cur_click_mode)
+            {
+                case e_click_mode.teleport:
+                    break;
+
+                case e_click_mode.create_gpx:
+                    // clear the gpx buffer.
+                    way_points.Text = "";
+                    gpx_locations.Clear();
+                    myMap.Children.Clear();
+                    gpx_save_button.IsEnabled = false;
+                    break;
+            }
         }
 
         /// <summary>
@@ -524,6 +539,7 @@ namespace GPS_Simulator
                 case e_click_mode.teleport:
                     teleport_click(sender, e);
                     break;
+                default: break;
             }
         }
 
@@ -717,7 +733,7 @@ namespace GPS_Simulator
                     break;
 
                 case e_click_mode.teleport:
-                    System.Windows.Forms.MessageBox.Show("entering GPX creation mode, single left click to set way point, Right click reset the waypoints, click the \"Save GPX\" button to save it to a GPX file.");
+                    System.Windows.Forms.MessageBox.Show("entering GPX creation mode, single left click to set way point, right click to reset the waypoints, click the \"Save GPX\" button to save it to a GPX file.");
                     cur_click_mode = e_click_mode.create_gpx;
                     gpx_create_button.Content = "Back to Teleport Mode";
                     break;

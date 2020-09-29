@@ -10,7 +10,6 @@
     <Grid>
         <!--map view-->
         <m:Map x:Name="myMap"
-            Center="47.6205, -122.3493" 
             CredentialsProvider="MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU" 
             ZoomLevel="16" 
             MouseDoubleClick="Map_MouseDoubleClick"

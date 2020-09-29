@@ -1,7 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GPS_Simulator.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="home_lat" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">47.6205</Value>
+    </Setting>
+    <Setting Name="home_lon" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">-122.3493</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

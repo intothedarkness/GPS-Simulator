@@ -97,6 +97,7 @@
       <DependentUpon>dev_prov.cs</DependentUpon>
     </Compile>
     <Compile Include="device_conn.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="walking_timer_callback.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
