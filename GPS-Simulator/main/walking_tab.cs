@@ -6,6 +6,9 @@
 // Bing Map WPF control
 using Microsoft.Maps.MapControl.WPF;
 
+// GPX
+using SharpGpx;
+
 using System;
 using System.Linq;
 using System.Windows;
@@ -63,54 +66,30 @@ namespace GPS_Simulator
                     draw_gpx_route();
                 }
             }
-
         }
 
         private static void read_gpx_coords(string gpx_file_name, ref LocationCollection lc)
         {
-            XDocument gpx_file = XDocument.Load(gpx_file_name);
-            XNamespace gpx = XNamespace.Get("http://www.topografix.com/GPX/1/1");
+            GpxClass gpx = GpxClass.FromFile(gpx_file_name);
 
-            var waypoints = from waypoint in gpx_file.Descendants(gpx + "wpt")
-                            select new
-                            {
-                                Latitude = waypoint.Attribute("lat").Value,
-                                Longitude = waypoint.Attribute("lon").Value,
-                                Elevation = waypoint.Element(gpx + "ele") != null ? waypoint.Element(gpx + "ele").Value : null
-                            };
-
-            foreach (var wpt in waypoints)
+            foreach (var wpt in gpx.wpt)
             {
-                lc.Add(new Location(Convert.ToDouble(wpt.Latitude),
-                    Convert.ToDouble(wpt.Longitude),
-                    Convert.ToDouble(wpt.Elevation)));
+                lc.Add(new Location(Convert.ToDouble(wpt.lat),
+                    Convert.ToDouble(wpt.lon),
+                    Convert.ToDouble(wpt.ele)));
             }
 
-            var tracks = from track in gpx_file.Descendants(gpx + "trk")
-                         select new
-                         {
-                             Name = track.Element(gpx + "name") != null ? track.Element(gpx + "name").Value : null,
-                             Segs = (
-                             from trackpoint in track.Descendants(gpx + "trkpt")
-                             select new
-                             {
-                                 Latitude = trackpoint.Attribute("lat").Value,
-                                 Longitude = trackpoint.Attribute("lon").Value,
-                                 Elevation = trackpoint.Element(gpx + "ele") != null ? trackpoint.Element(gpx + "ele").Value : null
-                             }
-                             )
-                         };
-
-            foreach (var trk in tracks)
+            foreach (var trk in gpx.trk)
             {
-                // Populate track data.
-                foreach (var trkSeg in trk.Segs)
+                foreach (var trk_seg in trk.trkseg)
                 {
-                    lc.Add(new Location(Convert.ToDouble(trkSeg.Latitude),
-                        Convert.ToDouble(trkSeg.Longitude),
-                        Convert.ToDouble(trkSeg.Elevation)));
+                    foreach (var trkpt in trk_seg.trkpt)
+                    {
+                        lc.Add(new Location(Convert.ToDouble(trkpt.lat),
+                                Convert.ToDouble(trkpt.lon),
+                                Convert.ToDouble(trkpt.ele)));
+                    }
                 }
-
             }
         }
         /// <summary>
@@ -269,6 +248,5 @@ namespace GPS_Simulator
         {
             switch_walking_state();
         }
-
     }
 }

@@ -140,17 +140,18 @@ namespace GPS_Simulator
 
         private XmlDocument GetXmlResponse(string requestUrl)
         {
+            XmlDocument xmlDoc = new XmlDocument();
+
             HttpWebRequest request = WebRequest.Create(requestUrl) as HttpWebRequest;
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {
-                if (response.StatusCode != HttpStatusCode.OK)
-                    throw new Exception(String.Format("Server error (HTTP {0}: {1}).",
-                    response.StatusCode,
-                    response.StatusDescription));
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(response.GetResponseStream());
-                return xmlDoc;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    xmlDoc.Load(response.GetResponseStream());
+                }
             }
+
+            return xmlDoc;
         }
 
         // Format the URI from a list of locations.
@@ -268,6 +269,14 @@ namespace GPS_Simulator
                 lat.Text = it.loc.Latitude.ToString();
                 lon.Text = it.loc.Longitude.ToString();
                 alt.Text = it.loc.Altitude.ToString();
+            }
+        }
+
+        private void search_box_key_down_handler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                search_Button_Click(0, new System.Windows.RoutedEventArgs());
             }
         }
     }
