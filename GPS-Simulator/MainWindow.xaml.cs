@@ -75,7 +75,7 @@ namespace GPS_Simulator
         /// </summary>
         public MainWindow()
         {
-            CultureInfo.CurrentCulture = new CultureInfo("th-TH", false);
+            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             InitializeComponent();
 
             // default is walking
