@@ -288,6 +288,40 @@ namespace GPS_Simulator
             service2.Dispose();
         }
 
+        public void stop_service(DeviceModel itm)
+        {
+            var size = BitConverter.GetBytes(1u);
+            Array.Reverse(size);
+            var num = 1u;
+            iDevice.idevice_new(out var device, itm.UDID);
+            var ret_handshake = lockdown.lockdownd_client_new_with_handshake(device, out var client,
+                   "devicelocation");
+
+            if (ret_handshake != 0)
+            {
+                return;
+            }
+
+            var ret_start_service = lockdown.lockdownd_start_service(client,
+                      "com.apple.dt.simulatelocation", out var service2);
+            if (ret_start_service != 0)
+            {
+                return;
+            }
+
+            var se = service.service_client_new(device, service2, out var client2);
+            if (se != 0)
+            {
+                return;
+            }
+
+            se = service.service_send(client2, size, 4u, ref num);
+            if (se != 0)
+            {
+                return;
+            }
+        }
+
         public void UpdateLocation(Location location)
         {
             // no device is connected.
@@ -300,11 +334,39 @@ namespace GPS_Simulator
             var Latitude = location.Latitude.ToString();
             var Altitude = location.Altitude.ToString();
 
-            for (int i = 0; i < Devices.Count(); i++)
+            foreach(DeviceModel device in Devices)
             {
-                DeviceModel itm = Devices[i];
-                UpdateLocation(Longitude, Latitude, Altitude, itm);
+                UpdateLocation(Longitude, Latitude, Altitude, device);
             }
+
+            // update spoofing status.
+            wnd_instance.Dispatcher.Invoke((Action)(() =>
+            {
+                wnd_instance.is_spoofing_on = true;
+                wnd_instance.stop_spoofing_button.IsEnabled = true;
+            }));
+        }
+
+        public void stopSpoofingLoc()
+        {
+            // no device is connected.
+            if (Devices.Count == 0)
+            {
+                return;
+            }
+
+            foreach (DeviceModel device in Devices)
+            {
+                stop_service(device);
+            }
+
+            // update spoofing status.
+            wnd_instance.Dispatcher.Invoke((Action)(() =>
+            {
+                wnd_instance.is_spoofing_on = false;
+                wnd_instance.stop_spoofing_button.IsEnabled = false;
+            }));
+
         }
     }
 

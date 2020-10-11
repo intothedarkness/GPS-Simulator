@@ -65,6 +65,8 @@ namespace GPS_Simulator
         location_service loc_service = null;
         public Pushpin teleport_pin = null;
 
+        public bool is_spoofing_on = false;
+
         LocationCollection gpx_locations = new LocationCollection();
 
         public string BingMapKey = @"MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU";
@@ -87,6 +89,8 @@ namespace GPS_Simulator
             loop_reverse.IsChecked = true;
 
             gpx_save_button.IsEnabled = false;
+
+            stop_spoofing_button.IsEnabled = false;
 
             // load native libraries for iDevice
             NativeLibraries.Load();

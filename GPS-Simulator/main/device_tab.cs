@@ -23,5 +23,10 @@ namespace GPS_Simulator
             dev_prov dlg = new dev_prov(this, location_service.GetInstance(this).Devices);
             dlg.ShowDialog();
         }
+
+        private void stop_Spoof_Click(object sender, RoutedEventArgs e)
+        {
+            location_service.GetInstance(this).stopSpoofingLoc();
+        }
     }
 }

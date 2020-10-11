@@ -21,16 +21,16 @@
         <TabControl Margin="0,0,1039.286,-0.286" >
             <TabItem Header="Teleport">
                 <Grid>
-                    <ListBox x:Name ="search_result_list" Margin="15,38,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="359" SelectionChanged="search_result_list_SelectionChanged" Width="203"  />
+                    <ListBox x:Name ="search_result_list" Margin="9,38,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="359" SelectionChanged="search_result_list_SelectionChanged" Width="209"  />
                     <Button Content="Search" HorizontalAlignment="Left" Height="28" Margin="156,10,0,0" VerticalAlignment="Top" Width="62" RenderTransformOrigin="1.206,0.45" Click="search_Button_Click"/>
-                    <TextBox x:Name ="search_box" HorizontalAlignment="Left" Height="28" Margin="15,10,0,0" VerticalAlignment="Top" Width="141" KeyDown="search_box_key_down_handler"/>
+                    <TextBox x:Name ="search_box" HorizontalAlignment="Left" Height="28" Margin="9,10,0,0" VerticalAlignment="Top" Width="146" KeyDown="search_box_key_down_handler"/>
                     <TextBox x:Name ="lat" HorizontalAlignment="Left" Height="28" Margin="92,402,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="126"/>
                     <TextBox x:Name ="lon" HorizontalAlignment="Left" Height="28" Margin="92,432,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="126"/>
                     <TextBox x:Name ="alt" HorizontalAlignment="Left" Height="28" Margin="92,462,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="126"/>
-                    <Label  Content="Latitude" HorizontalAlignment="Left" Height="28" Margin="15,402,0,0" VerticalAlignment="Top" Width="64"/>
-                    <Label  Content="Longitude" HorizontalAlignment="Left" Height="28" Margin="15,432,0,0" VerticalAlignment="Top" Width="72"/>
-                    <Label  Content="Altitude" HorizontalAlignment="Left" Height="28" Margin="15,462,0,0" VerticalAlignment="Top" Width="59"/>
-                    <Button Content="Teleport" HorizontalAlignment="Left" Height="26" Margin="15,498,0,0" VerticalAlignment="Top" Width="203" Click="tele_Button_Click"/>
+                    <Label  Content="Latitude" HorizontalAlignment="Left" Height="28" Margin="9,402,0,0" VerticalAlignment="Top" Width="64"/>
+                    <Label  Content="Longitude" HorizontalAlignment="Left" Height="28" Margin="9,432,0,0" VerticalAlignment="Top" Width="72"/>
+                    <Label  Content="Altitude" HorizontalAlignment="Left" Height="28" Margin="9,462,0,0" VerticalAlignment="Top" Width="59"/>
+                    <Button Content="Teleport" HorizontalAlignment="Left" Height="26" Margin="9,498,0,0" VerticalAlignment="Top" Width="208" Click="tele_Button_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Walking">
@@ -65,6 +65,7 @@
                 <Grid>
                     <TextBlock x:Name ="connected_dev" Height="59" Margin="0,4,2.333,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
                     <Button x:Name ="device_prov" Content="Provision Device" HorizontalAlignment="Left" Height="26" Margin="0,650,0,0" VerticalAlignment="Top" Width="221" Click="device_Button_Click"/>
+                    <Button x:Name ="stop_spoofing_button" Content="Stop Spoofing" HorizontalAlignment="Left" Height="26" Margin="0,695,0,0" VerticalAlignment="Top" Width="221" Click="stop_Spoof_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="GPX tool">
