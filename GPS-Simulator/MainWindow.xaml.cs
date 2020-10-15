@@ -11,6 +11,7 @@ using Microsoft.Maps.MapControl.WPF;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 // GPX
@@ -122,6 +123,11 @@ namespace GPS_Simulator
             map_center.Longitude = Properties.Settings.Default.home_lon;
 
             myMap.Center = map_center;
+        }
+
+        public Location GetMapLocation(MouseEventArgs mouseEventArgs)
+        {
+            return myMap.ViewportPointToLocation(mouseEventArgs.GetPosition(myMap));
         }
     }
 }
