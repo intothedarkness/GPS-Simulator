@@ -110,21 +110,7 @@ namespace GPS_Simulator
         }
 
 
-        /// <summary>
-        /// double click and teleport.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Map_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            switch (cur_click_mode)
-            {
-                case e_click_mode.teleport:
-                    teleport_click(sender, e);
-                    break;
-                default: break;
-            }
-        }
+       
 
 
 
