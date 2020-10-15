@@ -75,19 +75,9 @@ namespace GPS_Simulator
             // Disables the default mouse double-click action.
             e.Handled = true;
 
-            // Determine the location to place the pushpin at on the map.
-
-            // Get the mouse click coordinates
-            Point mousePosition = e.GetPosition(this);
-
-            // WARNING:
-            // It seems to be a bug of Bing Map WPF control, that when the control is 
-            // not in full screen mode, the coords calculation got some offsets. 
-            // make a dirty adjustment here.
-            mousePosition.Offset(-Width * 3 / 16, 0);
-
+            
             // Convert the mouse coordinates to a location on the map
-            Location pinLocation = myMap.ViewportPointToLocation(mousePosition);
+            Location pinLocation = GetMapLocation(e);
 
             // The pushpin to add to the map.
             if (teleport_pin != null)

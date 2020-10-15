@@ -97,9 +97,6 @@ namespace GPS_Simulator
 
             e.Handled = true;
 
-            Point mousePosition = e.GetPosition(this);
-            mousePosition.Offset(-Width * 3 / 16, 0);
-
             if (teleport_pin != null)
             {
                 myMap.Children.Remove(teleport_pin);
@@ -108,7 +105,7 @@ namespace GPS_Simulator
             Pushpin waypoint_pin = new Pushpin();
 
             // Convert the mouse coordinates to a location on the map
-            Location pinLocation = myMap.ViewportPointToLocation(mousePosition);
+            Location pinLocation = GetMapLocation(e);
 
             waypoint_pin.Location = pinLocation;
             string elevationUrl = spell_elevation_query_url(pinLocation);
