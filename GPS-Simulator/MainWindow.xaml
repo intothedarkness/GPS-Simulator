@@ -7,14 +7,23 @@
         xmlns:local="clr-namespace:GPS_Simulator"
         mc:Ignorable="d"
         Title="GPS-Simulator" Height="826.286" Width="1280">
+    
+    <Window.Resources>
+        <ContextMenu x:Key="cmPushpin">
+            <MenuItem Name="AddPinBeforeMenuItem" Header="Add Pin Before" Click="AddPinBeforeMenuItem_Click"/>
+            <MenuItem Name="AddPinAfterMenuItem" Header="Add Pin After" Click="AddPinAfterMenuItem_Click"/>
+            <MenuItem Name="RemovePinMenuItem" Header="Remove Pin" Click="RemovePinMenuItem_Click"/>
+        </ContextMenu>
+    </Window.Resources>
+
     <Grid>
         <!--map view-->
         <m:Map x:Name="myMap"
             CredentialsProvider="MRoghxvRwiH04GVvGpg4~uaP_it5CCQ6ckz-j9tA_iQ~AoPUZFQPIn9s1qjKPLgkvgeGPZPKznUlqM_e0fPu8NCXTi_ZSZTDud4_j0F1SkKU" 
             ZoomLevel="16" 
             MouseDoubleClick="Map_MouseDoubleClick"
-            MouseLeftButtonDown="Map_MouseSingleLeftClick"
             MouseRightButtonDown="Map_MouseSingleRightClick"
+            MouseMove="Map_MouseMove"
             Mode="Road" RenderTransformOrigin="0.5,0.5" Margin="240,0,0.286,-0.286">
         </m:Map>
 
