@@ -43,7 +43,7 @@ namespace GPS_Simulator
                     break;
 
                 case e_click_mode.teleport:
-                    System.Windows.Forms.MessageBox.Show("entering GPX creation mode, single left click to set way point, right click to reset the waypoints, click the \"Save GPX\" button to save it to a GPX file.");
+                    System.Windows.Forms.MessageBox.Show("Entering GPX creation mode, Double click on map to set way points, right click to reset the waypoints, click the \"Save GPX\" button to save it to a GPX file.");
                     cur_click_mode = e_click_mode.create_gpx;
                     gpx_create_button.Content = "Back to Teleport Mode";
                     break;
