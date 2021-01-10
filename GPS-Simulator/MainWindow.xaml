@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:GPS_Simulator"
         mc:Ignorable="d"
         Title="GPS-Simulator" Height="826.286" Width="1280">
-    
+
     <Window.Resources>
         <ContextMenu x:Key="cmPushpin">
             <MenuItem Name="AddPinBeforeMenuItem" Header="Add Pin Before" Click="AddPinBeforeMenuItem_Click"/>
@@ -72,9 +72,9 @@
             </TabItem>
             <TabItem Header="Device">
                 <Grid>
-                    <TextBlock x:Name ="connected_dev" Height="59" Margin="0,4,2.333,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <Button x:Name ="device_prov" Content="Provision Device" HorizontalAlignment="Left" Height="26" Margin="0,650,0,0" VerticalAlignment="Top" Width="221" Click="device_Button_Click"/>
-                    <Button x:Name ="stop_spoofing_button" Content="Stop Spoofing" HorizontalAlignment="Left" Height="26" Margin="0,695,0,0" VerticalAlignment="Top" Width="221" Click="stop_Spoof_Click"/>
+                    <TextBlock x:Name ="connected_dev" Height="134" Margin="2,10,-0.667,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <Button x:Name ="device_prov" Content="Provision Device" HorizontalAlignment="Left" Height="26" Margin="7,149,0,0" VerticalAlignment="Top" Width="210" Click="device_Button_Click"/>
+                    <Button x:Name ="stop_spoofing_button" Content="Stop Spoofing" HorizontalAlignment="Left" Height="26" Margin="7,180,0,0" VerticalAlignment="Top" Width="210" Click="stop_Spoof_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="GPX tool">
