@@ -10,6 +10,7 @@ using Microsoft.Maps.MapControl.WPF;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -77,6 +78,7 @@ namespace GPS_Simulator
         /// </summary>
         public MainWindow()
         {
+            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             InitializeComponent();
 
             // default is walking
